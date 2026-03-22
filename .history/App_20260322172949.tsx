@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { RootStack } from './Project/Screens/stacks/RootStacks';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { DepositProvider } from './Project/Screens/context/DepositContext';
-import { CashoutProvider } from './Project/Screens/context/CashoutContext'
+import { CashoutProvider } from './Project/Screens/context/CashoutScreen'
 
 
 
