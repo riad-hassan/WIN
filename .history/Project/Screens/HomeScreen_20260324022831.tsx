@@ -362,9 +362,6 @@ useEffect(() => {
                 <Swiper 
                  showsPagination
                  dotColor="#fff"
-                 loop={true}          // manual swipe
-                 autoplay={true}      // disable auto
-                 removeClippedSubviews
                 >
               {images.map((image, index) => (
                 
@@ -669,7 +666,7 @@ const styles = StyleSheet.create ({
     borderRadius: 10,
     marginVertical: 10,
     backgroundColor: "#fdfdfdff" ,
-  
+    flexWrap: 'wrap',
   },
   mini:{
     height:27,
@@ -687,8 +684,9 @@ const styles = StyleSheet.create ({
     alignItems: "center" 
   },
   image1: { 
-    width: 370, 
+    width: "100%", 
     height: 170, 
+    resizeMode: "contain",
     flexWrap: 'wrap',
     borderRadius: 10,
   },

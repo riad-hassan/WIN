@@ -79,8 +79,7 @@ backgroundColor:"#00000055",
 paddingHorizontal:10,
 paddingVertical:4,
 borderRadius:6,
-marginHorizontal:6,
-minWidth:80,
+marginHorizontal:6
 },
 
 balanceLabel:{

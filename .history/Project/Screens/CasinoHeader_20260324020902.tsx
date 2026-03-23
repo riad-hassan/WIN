@@ -61,26 +61,24 @@ const styles = StyleSheet.create({
 container:{
 flexDirection:"row",
 alignItems:"center",
-marginRight:-15
+marginRight:-9
 },
 addBtn:{
-  backgroundColor:"#59eeb0ff",
-  width:22,
-  height:22,
-  borderRadius:4,
+  backgroundColor:"#22c55e",
+  width:24,
+  height:24,
+  borderRadius:12,
   justifyContent:"center",
   alignItems:"center",
-  marginLeft:2,
-  marginRight: -4
+  marginLeft:6
 },
 
 balanceBox:{
 backgroundColor:"#00000055",
 paddingHorizontal:10,
 paddingVertical:4,
-borderRadius:6,
-marginHorizontal:6,
-minWidth:80,
+borderRadius:8,
+marginHorizontal:6
 },
 
 balanceLabel:{
@@ -91,17 +89,14 @@ alignSelf: 'center'
 
 balanceRow:{
 flexDirection:"row",
-alignItems:"center",
-justifyContent:"flex-start", // text + button alignment ঠিক রাখবে
-  gap:4,
+alignItems:"center"
 },
 
 balance:{
 color:"#fff",
 fontWeight:"bold",
 marginRight:6,
-fontSize:12,
- flexShrink:1,
+fontSize:12
 }
 
 })

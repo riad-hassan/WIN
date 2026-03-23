@@ -362,8 +362,8 @@ useEffect(() => {
                 <Swiper 
                  showsPagination
                  dotColor="#fff"
-                 loop={true}          // manual swipe
-                 autoplay={true}      // disable auto
+                 loop={false}          // manual swipe
+                 autoplay={false}      // disable auto
                  removeClippedSubviews
                 >
               {images.map((image, index) => (

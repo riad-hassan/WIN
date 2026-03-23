@@ -42,7 +42,7 @@ return(
     onPress={() => navigation.navigate("Deposit")}
   >
     <Text style={{color:"#000", fontWeight:"bold", fontSize:16}}>
-      ➕
+      十
     </Text>
   </TouchableOpacity>
 
@@ -70,17 +70,15 @@ addBtn:{
   borderRadius:4,
   justifyContent:"center",
   alignItems:"center",
-  marginLeft:2,
-  marginRight: -4
+  marginLeft:2
 },
 
 balanceBox:{
 backgroundColor:"#00000055",
 paddingHorizontal:10,
 paddingVertical:4,
-borderRadius:6,
-marginHorizontal:6,
-minWidth:80,
+borderRadius:8,
+marginHorizontal:6
 },
 
 balanceLabel:{
@@ -91,17 +89,14 @@ alignSelf: 'center'
 
 balanceRow:{
 flexDirection:"row",
-alignItems:"center",
-justifyContent:"flex-start", // text + button alignment ঠিক রাখবে
-  gap:4,
+alignItems:"center"
 },
 
 balance:{
 color:"#fff",
 fontWeight:"bold",
 marginRight:6,
-fontSize:12,
- flexShrink:1,
+fontSize:12
 }
 
 })
