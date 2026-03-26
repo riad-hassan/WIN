@@ -239,7 +239,7 @@ const {balance,setBalance} = useContext(DepositContext)
 
 const [showHistory,setShowHistory] = useState(false) 
 
-const webViewRef = useRef(null);
+
 const [playersOnline,setPlayersOnline] = useState(2438) // random player amount dykanor jonno
 
 // setting button er jonno
@@ -339,8 +339,6 @@ const [waitTime,setWaitTime]=useState(7)
 
 const [result,setResult] = useState("")
 
-
-  
 
 
 
@@ -602,7 +600,7 @@ const cashOut1 = () => {
 if(!betPlaced1 || cashedOut1) return
 const win = betAmount1 * multiplier
 setBalance(prev => prev + win)
-setResult(`YOU WIN ৳${win.toFixed(2)}`)
+setResult(`You Won ${win.toFixed(2)} BDT`)
 setCashedOut1(true)
 setMyBets(prev =>
   prev.map(item =>
@@ -627,7 +625,7 @@ const cashOut2 = () => {
 if(!betPlaced2 || cashedOut2) return
 const win = betAmount2 * multiplier
 setBalance(prev => prev + win)
-setResult(`YOU WIN ৳${win.toFixed(2)}`)
+setResult(`You Won ${win.toFixed(2)} BDT`)
 setCashedOut2(true)
 setMyBets(prev =>
   prev.map(item =>
@@ -713,7 +711,7 @@ return(
 
 <View style={{height:240, width:'100%', position: "relative"}}>
 <PixiGraph
-webRef={webViewRef}
+
 
  
   onMessage={(event)=>{
@@ -725,47 +723,12 @@ webRef={webViewRef}
     if(data.type === "CRASH"){
   crashPoint.current = data.crashPoint
 
-let lostAmount = 0;
-
-if(betPlaced1 && !cashedOut1){
-  lostAmount += betAmount1;
-}
-if(betPlaced2 && !cashedOut2){
-  lostAmount += betAmount2;
-}
-
-if(lostAmount > 0){
-  // send lose msg to PixiGraph overlay
-  webViewRef.current?.postMessage(JSON.stringify({
-    type:"LOSE_MESSAGE",
-    text:`YOU LOST ৳${lostAmount}`
-  }))
-}
-
- setBetPlaced1(false)
-setBetPlaced2(false)
-
-setCashedOut1(false)
-setCashedOut2(false)
-
-setBetAmount1(0)
-setBetAmount2(0)
-
-setQueuedBet1(false)
-setQueuedBet2(false)
-
-
-
-
   // 🔥 ADD THIS → history update
   setHistory(prev => {
     const newItem = Number(data.crashPoint.toFixed(2))
     const updated = [newItem, ...prev]
     return updated.slice(0, 50)
   })
-
- 
-
 // ✅ ADD THIS (VERY IMPORTANT)
   setTimeout(() => {
     setWaiting(true)
@@ -785,19 +748,7 @@ if(data.type === "MULTIPLIER"){
 
 if(data.type === "ROUND_START"){
   setWaiting(false)
-
-  setResult("");
-
-webViewRef.current?.postMessage(JSON.stringify({
-  type:"CLEAR_LOSE"
-}));
 }
-
-  } catch(e){
-    console.log("Parse Error", e)
-  }
-}}
-/>
 
 {result !== "" && !waiting && (
   <View style={{
@@ -814,6 +765,12 @@ webViewRef.current?.postMessage(JSON.stringify({
     </Text>
   </View>
 )}
+
+  } catch(e){
+    console.log("Parse Error", e)
+  }
+}}
+/>
 
 {/* 🔥 WAITING OVERLAY */}
   {waiting && (

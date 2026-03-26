@@ -263,7 +263,7 @@ start()
 
 
 
-document.addEventListener("message", (event) => {
+window.addEventListener("message", (event) => {
   try {
     const data = JSON.parse(event.data);
 
@@ -272,6 +272,7 @@ document.addEventListener("message", (event) => {
     }
 
     if (data.type === "CLEAR_LOSE") {
+      loseText.text = "";
     }
 
   } catch (e) {}

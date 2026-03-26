@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { WebView } from "react-native-webview";
 
-export default function PixiGraph({ onMessage, webRef }) {
+export default function PixiGraph({ onMessage }) {
 
 const html = `
 <!DOCTYPE html>
@@ -171,20 +171,6 @@ crashOverlay.addChild(crashValueText)
 
 
 
-const loseText = new PIXI.Text("", {
-  fill: "#ff1d1dff",
-  fontSize: 22,
-  fontWeight: "bold",
-});
-loseText.anchor.set(0.5);
-loseText.x = app.screen.width / 2;
-loseText.y = app.screen.height / 2 + 70;
-crashOverlay.addChild(loseText);
-
-
-
-
-
 
 
 // ---------- STATE ----------
@@ -258,27 +244,6 @@ else{
   resultText.visible = false
 }
 start()
-
-
-
-
-
-document.addEventListener("message", (event) => {
-  try {
-    const data = JSON.parse(event.data);
-
-    if (data.type === "LOSE_MESSAGE") {
-      loseText.text = data.text;
-    }
-
-    if (data.type === "CLEAR_LOSE") {
-    }
-
-  } catch (e) {}
-});
-
-
-
 
 
 
@@ -546,9 +511,6 @@ plane.visible = false
 // show overlay
 crashOverlay.visible = true
 crashValueText.text = crashPoint.toFixed(2) + "x"
-loseText.text = ""   // default empty
-
-
 
 // hide normal UI
 plane.visible = false
@@ -574,7 +536,6 @@ return
 return (
 <View style={{height:240, borderRadius:20, overflow:"hidden"}}>
 <WebView
-ref={webRef}
   originWhitelist={['*']}
   source={{ html: html}}
   javaScriptEnabled={true}

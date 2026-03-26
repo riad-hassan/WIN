@@ -340,8 +340,6 @@ const [waitTime,setWaitTime]=useState(7)
 const [result,setResult] = useState("")
 
 
-  
-
 
 
 
@@ -618,7 +616,7 @@ setMyBets(prev =>
 setTimeout(()=> {
   setBetPlaced1(false)
   setBetAmount1(0)
-},1500)
+},2500)
 }
 
 
@@ -643,7 +641,7 @@ setMyBets(prev =>
 setTimeout(()=> {
   setBetPlaced2(false)
   setBetAmount2(0)
-},1500)
+},2500)
 }
 
 
@@ -742,20 +740,6 @@ if(lostAmount > 0){
   }))
 }
 
- setBetPlaced1(false)
-setBetPlaced2(false)
-
-setCashedOut1(false)
-setCashedOut2(false)
-
-setBetAmount1(0)
-setBetAmount2(0)
-
-setQueuedBet1(false)
-setQueuedBet2(false)
-
-
-
 
   // 🔥 ADD THIS → history update
   setHistory(prev => {
@@ -763,9 +747,6 @@ setQueuedBet2(false)
     const updated = [newItem, ...prev]
     return updated.slice(0, 50)
   })
-
- 
-
 // ✅ ADD THIS (VERY IMPORTANT)
   setTimeout(() => {
     setWaiting(true)
@@ -793,11 +774,7 @@ webViewRef.current?.postMessage(JSON.stringify({
 }));
 }
 
-  } catch(e){
-    console.log("Parse Error", e)
-  }
-}}
-/>
+
 
 {result !== "" && !waiting && (
   <View style={{
@@ -814,6 +791,12 @@ webViewRef.current?.postMessage(JSON.stringify({
     </Text>
   </View>
 )}
+
+  } catch(e){
+    console.log("Parse Error", e)
+  }
+}}
+/>
 
 {/* 🔥 WAITING OVERLAY */}
   {waiting && (

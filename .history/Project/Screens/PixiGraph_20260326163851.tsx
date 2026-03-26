@@ -272,6 +272,7 @@ document.addEventListener("message", (event) => {
     }
 
     if (data.type === "CLEAR_LOSE") {
+      loseText.text = "";
     }
 
   } catch (e) {}

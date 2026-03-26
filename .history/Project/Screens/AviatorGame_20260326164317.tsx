@@ -742,20 +742,6 @@ if(lostAmount > 0){
   }))
 }
 
- setBetPlaced1(false)
-setBetPlaced2(false)
-
-setCashedOut1(false)
-setCashedOut2(false)
-
-setBetAmount1(0)
-setBetAmount2(0)
-
-setQueuedBet1(false)
-setQueuedBet2(false)
-
-
-
 
   // 🔥 ADD THIS → history update
   setHistory(prev => {
@@ -763,9 +749,6 @@ setQueuedBet2(false)
     const updated = [newItem, ...prev]
     return updated.slice(0, 50)
   })
-
- 
-
 // ✅ ADD THIS (VERY IMPORTANT)
   setTimeout(() => {
     setWaiting(true)
