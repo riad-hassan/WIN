@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { Animated } from "react-native";
 import pay from '../Screens/assets/pay.png';
-
+import LinearGradient from "react-native-linear-gradient";
 
 
 const methods = [
@@ -20,12 +20,12 @@ const names = [
 
 const amounts = [50000,28000,32000,25500,75000,72000,100000, 27000, 25000, 28000, 34000, 48500, 57000, 47000, 88000, 34000, 48500, 77000, 75000,72500,100000, 25000, 25000, 50000,28000,52000,25500,75000, 25000, 58450, 90000, 45000, 25000, 45000, 70000, 71000, 54000, 25000, 26000, 29000, 54000, 25000, 26000, 29000,54000, 25000, 26000, 29000, ]
 
-const [liveMulti,setLiveMulti] = useState(1.00)
+
 // screen size thik rakar jonno
 import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
 const cardWidth = (screenWidth - 40) / 3;
-const displayMulti = Math.max(7, liveMulti + Math.random()*5)
+
 
 
 
@@ -42,7 +42,7 @@ const games = [
     { id: "10", title: "JILI", image: require("../Screens/assets/jili.png"), action: "popup" }, 
     { id: "11", title: "SuperAce", image: require("../Screens/assets/superace.png"), action: "popup" }, 
     { id: "12", title: "COIN TOSS", image: require("../Screens/assets/Coin-Toss.png"), action: "popup",},  // popup er oikany screen dile oi screen open hby
-    { id: "13", title: "CK444", image: require("../Screens/assets/444.png"), action: "popup" }, 
+    // { id: "13", title: "CK444", image: require("../Screens/assets/444.png"), action: "popup" }, 
     { id: "14", title: "BOXING KING", image: require("../Screens/assets/Boxing.png"), action: "popup" }, 
     { id: "15", title: "GOLDEN TREASURE", image: require("../Screens/assets/golden.png"), action: "popup" }, 
     { id: "16", title: "CHIKEN ROAD", image: require("../Screens/assets/chiken.png"), action: "popup" }, 
@@ -90,11 +90,35 @@ const games = [
     { id: "58", title: "BANG BANG", image: require("../Screens/assets/jungle bang bang.png"), action: "popup" }, 
     { id: "59", title: "PERFECT CATCH", image: require("../Screens/assets/perfect catch.png"), action: "popup" }, 
     { id: "60", title: "MINES GAME", image: require("../Screens/assets/mins game.png"), action: "popup" },
+    { id: "92", title: "BACCARAT C10", image: require("../Screens/assets/baccarat c10.png"), action: "popup", },  // popup er oikany screen dile oi screen open hby
+    { id: "93", title: "SIC BAC", image: require("../Screens/assets/sic bac.png"), action: "popup" }, 
+    { id: "94", title: "DEUTSCHES ROULETTE", image: require("../Screens/assets/deutsches roulette.png"), action: "popup" }, 
+    { id: "95", title: "LIVE ROULETTE A", image: require("../Screens/assets/live roulette a.png"), action: "popup" }, 
+    { id: "96", title: "BAO SLOT", image: require("../Screens/assets/bao slot.png"), action: "popup" }, 
+    { id: "97", title: "CRICKETER", image: require("../Screens/assets/cricketer.png"), action: "popup" }, 
+    { id: "98", title: "ZEPPELIN", image: require("../Screens/assets/zeppelin.png"), action: "popup" }, 
+    { id: "99", title: "BLACKJACK", image: require("../Screens/assets/blackjack.png"), action: "popup" }, 
+    { id: "100", title: "VIP ROULETTE", image: require("../Screens/assets/vip roulette.png"), action: "popup" }, 
+    { id: "101", title: "BONUS TIME", image: require("../Screens/assets/bonus time.png"), action: "popup" }, 
+    { id: "102", title: "ANCIENT EGYPT", image: require("../Screens/assets/ancient egypt.png"), action: "popup" }, 
+    { id: "69", title: "BICHO", image: require("../Screens/assets/bicho (1).png"), action: "popup" }, 
+    { id: "70", title: "Xoc Dia", image: require("../Screens/assets/xoc dia (1).png"), action: "popup" }, 
+    { id: "71", title: "OAN TUTI", image: require("../Screens/assets/oan tuti (2).png"), action: "popup" }, 
+    { id: "72", title: "FISH PRAWN CRAB", image: require("../Screens/assets/fish prawn crab.png"), action: "popup",},  // popup er oikany screen dile oi screen open hby
+    { id: "73", title: "BLACK JACK", image: require("../Screens/assets/black jack.png"), action: "popup" }, 
+    { id: "74", title: "BJ LUCKY LADIES", image: require("../Screens/assets/black jack lucky.png"), action: "popup" }, 
+    { id: "75", title: "PussY go", image: require("../Screens/assets/pussy go.png"), action: "popup" }, 
+    { id: "76", title: "VIDEO POKER", image: require("../Screens/assets/video poker.png"), action: "popup" }, 
+    { id: "77", title: "MINE SWEEPER", image: require("../Screens/assets/mine sweeper.png"), action: "popup" }, 
+    { id: "78", title: "TEEN PAATY", image: require("../Screens/assets/teen patty.png"), action: "popup" }, 
+    { id: "79", title: "CASH ROCKET", image: require("../Screens/assets/cash rocket.png"), action: "popup" },
+    { id: "80", title: "13 KILLER", image: require("../Screens/assets/13 killer.png"), action: "popup", },  // popup er oikany screen dile oi screen open hby
+    { id: "81", title: "TANGKAS", image: require("../Screens/assets/bola tangkas.png"), action: "popup" }, 
 ];
 
 
 
-export default function SlotScreen () {
+export default function LotteryScreen () {
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);  // pop up anar jonno use
     const scaleAnim = useRef(new Animated.Value(0)).current;  // pop up anar jonno use
@@ -195,7 +219,13 @@ return ()=>clearInterval(interval);
 
 
     return(
-        <ScrollView style={{ backgroundColor: "#225c14c0"}} >
+      <LinearGradient
+        colors={["#020617", "#0b1220", "#0f172a"]}
+        start={{x:0, y:0}}
+        end={{x:1, y:1}}
+        style={{flex:1}}
+      >
+        <ScrollView>
         {/** pop up uner jonno daoya */ }     
           <Modal transparent visible={modalVisible} animationType="fade">
           <View style={styles.overlay}>
@@ -224,37 +254,35 @@ return ()=>clearInterval(interval);
 
 
 
+        
+        <View style={styles.text}> 
+            <Text style={styles.text2}>               Lottery Coming Soon ....!</Text>
+            <Text style={{color:"#fff"}} > অতি শীগ্রই আমরা আপনাদের জন্য নতুন লটারির ব্যবস্থা করব।</Text>
+            <Text style={{color:"#fff"}} >       আমাদের পাশে থাকার জন্য আপনাদের অত্যন্ত ধন্যবাদ।</Text>
+        </View>
+
+
 
 
         <View style={styles.gamesContainer}>  
-  {games.map((game) => (
-    <TouchableOpacity 
-      key={game.id} 
-      style={styles.gameCard}
-      onPress={() => handleGamePress(game)}
-    >
-
-      {/* ✅ শুধু AVIATOR এ LIVE দেখাবে */}
-      {game.title === "AVIATOR GAME" && (
-        <Animated.View style={[styles.liveBadge, { opacity: blinkAnim }]}>
-          <Text style={styles.liveText}>🔴 LIVE</Text>
-        </Animated.View>
-      )}
-
-      <Image source={game.image} style={styles.gameImage} />
-      
-      {game.title === "AVIATOR GAME" && (
-        <View style={styles.liveMultiplier}>
-          <Text style={styles.liveMultiplierText}>
-            {displayMulti.toFixed(2)}x
-          </Text>
+          {games.map((game) => (
+            <TouchableOpacity 
+            key={game.id} 
+            style={styles.gameCard}
+            onPress={() => handleGamePress(game)}
+            >
+        
+               {/* LIVE badge */}
+              <Animated.View style={[styles.liveBadge, { opacity: blinkAnim }]}>
+                <Text style={styles.liveText}>🔴 LIVE</Text>
+              </Animated.View>
+        
+        
+              <Image source={game.image} style={styles.gameImage} />
+              <Text style={styles.gameTitle}>{game.title}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
-      )}
-
-      <Text style={styles.gameTitle}>{game.title}</Text>
-    </TouchableOpacity>
-  ))}
-</View>
 
 
 
@@ -297,7 +325,7 @@ return ()=>clearInterval(interval);
 </View>
 )}     
         </ScrollView>
-        
+        </LinearGradient>
     )
 }
 
@@ -355,7 +383,7 @@ gameCard: {
     marginBottom: 10,
     borderRadius: 12,
     overflow: "hidden",
-    backgroundColor: "#271d1dff",
+    backgroundColor: "#7bd5e0ff",
     alignItems: "center",
     justifyContent: 'center',
     margin: 5,
@@ -372,7 +400,7 @@ gameCard: {
     resizeMode: "cover",
   },
   gameTitle: {
-    color: "#fff",
+    color: "#000000ff",
     fontSize: 11,
     marginTop: 2,
     textAlign: "center",
@@ -418,10 +446,12 @@ text:{
      marginBottom:15,
      textAlign: 'center',
      alignSelf: 'center',
+     color: "#fff"
 },
 text2 :{
     fontSize: 20,
     fontWeight: '700',
+    color: "#fff"
 },
 cashBox:{
   position:"absolute",
@@ -463,22 +493,7 @@ progress:{
   borderBottomLeftRadius:10,
   borderBottomRightRadius:10
 },
-liveMultiplier:{
-position:"absolute",
-bottom:17,
-right:1,
-backgroundColor:"#000000aa",
-paddingHorizontal:8,
-paddingVertical:3,
-borderRadius:6,
 
-},
-
-liveMultiplierText:{
-color:"#22c55e",
-fontWeight:"bold",
-fontSize:14
-},
 
 
 })

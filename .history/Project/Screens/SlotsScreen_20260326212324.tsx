@@ -20,7 +20,7 @@ const names = [
 
 const amounts = [50000,28000,32000,25500,75000,72000,100000, 27000, 25000, 28000, 34000, 48500, 57000, 47000, 88000, 34000, 48500, 77000, 75000,72500,100000, 25000, 25000, 50000,28000,52000,25500,75000, 25000, 58450, 90000, 45000, 25000, 45000, 70000, 71000, 54000, 25000, 26000, 29000, 54000, 25000, 26000, 29000,54000, 25000, 26000, 29000, ]
 
-const [liveMulti,setLiveMulti] = useState(1.00)
+
 // screen size thik rakar jonno
 import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;

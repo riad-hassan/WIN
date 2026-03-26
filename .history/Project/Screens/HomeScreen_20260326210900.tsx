@@ -469,28 +469,28 @@ useEffect(() => {
 <View style={styles.gamesContainer}>  
   {games.map((game) => (
     <TouchableOpacity 
-      key={game.id} 
-      style={styles.gameCard}
-      onPress={() => handleGamePress(game)}
+    key={game.id} 
+    style={styles.gameCard}
+    onPress={() => handleGamePress(game)}
     >
 
-      {/* ✅ শুধু AVIATOR এ LIVE দেখাবে */}
-      {game.title === "AVIATOR GAME" && (
-        <Animated.View style={[styles.liveBadge, { opacity: blinkAnim }]}>
-          <Text style={styles.liveText}>🔴 LIVE</Text>
-        </Animated.View>
-      )}
+       {/* LIVE badge */}
+      <Animated.View style={[styles.liveBadge, { opacity: blinkAnim }]}>
+        <Text style={styles.liveText}>🔴 LIVE</Text>
+      </Animated.View>
+
 
       <Image source={game.image} style={styles.gameImage} />
       
-      {game.title === "AVIATOR GAME" && (
-        <View style={styles.liveMultiplier}>
-          <Text style={styles.liveMultiplierText}>
-            {displayMulti.toFixed(2)}x
-          </Text>
-        </View>
-      )}
+      {game.title === "AVIATOR GAME"  &&  (
 
+<View style={styles.liveMultiplier}>
+<Text style={styles.liveMultiplierText}>
+{displayMulti.toFixed(2)}x
+</Text>
+</View>
+
+)}
       <Text style={styles.gameTitle}>{game.title}</Text>
     </TouchableOpacity>
   ))}

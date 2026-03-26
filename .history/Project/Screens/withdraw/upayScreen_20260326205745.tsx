@@ -24,7 +24,7 @@ const { addCashout } = useContext(CashoutContext);
   const [amount, setAmount] = useState("");
 const [loading, setLoading] = useState(false);
   // quick amount buttons
-  const quickAmounts = [ 25000, 30000, 50000, 70000, 100000];
+  const quickAmounts = [ 1000, 2000, 5000, 10000, 20000];
 
 
   const numAmount = Number(amount);

@@ -2,11 +2,11 @@ import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { ActivityIndicator, Alert, Animated, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import pay from '../Screens/assets/pay.png';
 import suport from '../Screens/assets/suport.png';
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
-
-
+import LinearGradient from "react-native-linear-gradient";
+import { DepositContext } from "../Screens/context/DepositContext";
 
 
 const methods = [
@@ -20,7 +20,7 @@ const names = [
 "Arif346","Jamal856","Sabbir573","Imran776","Rony734", "Kam...", "Era...","Samha", "Ruhani", "Muhu", "Asif", "Saliha", "Bushra", "Parban" ,"Omar", "Dina", "Amatullah", "Labiba", "Labib", "Rihaa", "Tasfin", "Rehanul", "nafis", "zawad", "Emu", "eblehe", "Nishat", "Shuvadip", "Faysal", "Arpi", "Mun", "Joy", 
 ]
 
-const amounts = [50000,28000,32000,25500,75000,72000,100000, 27000, 25000, 28000, 34000, 48500, 57000, 47000, 88000, 34000, 48500, 77000, 75000,72500,100000, 25000, 25000, 50000,28000,52000,25500,75000, 25000, 58450, 90000, 45000, 25000, 45000, 70000, 71000, 54000, 25000, 26000, 29000, 54000, 25000, 26000, 29000,54000, 25000, 26000, 29000, ]
+const amounts = [5000,28000,12000,20500,75000,7200,11000, 20000, 24000, 18000, 34000, 48500, 17000, 47000,18000, 34000, 48500, 17000,75000,7200,11000, 20000, 24000,5000,28000,12000,20500,75000, 24500, 8450, 9000, 14500, 24000, 45000, 7000, 71000, 54000, 25000,  ]
 
 
 const gateways = [ 
@@ -35,10 +35,12 @@ const gateways = [
 
 
 
-export default function DepositScreen () {
+export default function CashoutScreen () {
 const navigation = useNavigation();
 const [cashData, setCashData] = useState(null);
 const progressAnim = useRef(new Animated.Value(1)).current;
+ const [hidden, setHidden] = useState(true);
+ const { balance } = useContext(DepositContext);
 
 
   // j ta select korbo oita asbe number
@@ -48,16 +50,16 @@ const handleSelectGateway = (item) => {
 
   // 🔥 method অনুযায়ী আলাদা screen open
   if (item.name === "bKash") {
-    navigation.navigate("bkash", { data: item });
+    navigation.navigate("Wbkash", { data: item });
   } 
   else if (item.name === "Nagad") {
-    navigation.navigate("Nagad", { data: item });
+    navigation.navigate("Wnagad", { data: item });
   } 
   else if (item.name === "Rocket") {
-    navigation.navigate("Rocket", { data: item });
+    navigation.navigate("Wrocket", { data: item });
   } 
   else if (item.name === "Upay") {
-    navigation.navigate("Upay", { data: item });
+    navigation.navigate("Wupay", { data: item });
   }
 };
 
@@ -106,17 +108,50 @@ return ()=>clearInterval(interval);
               keyboardShouldPersistTaps="handled"
               
 >
-  
-           <View style={styles.container}>
-            <TouchableOpacity >
-              <MaterialIcons name="account-balance" size={90} color={"#066b24ff"} />
-              <Text >  Add Money</Text>
-            </TouchableOpacity>
-            </View>
+           <Text> </Text>
+           <LinearGradient
+      colors={["#ffb300", "#ff7b00", "#ff5400"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.card}
+    >
+    
+      {/* wave overlay */}
+      <View style={styles.wave1} />
+      <View style={styles.wave2} />
 
-            <View>
-                <Text>                                    (Official Gateway) </Text>
-            </View>
+      {/* Top Row */}
+      <View style={styles.topRow}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <MaterialIcons name="account-balance-wallet" size={18} color="#fff" />
+          <Text style={styles.title}> Available balance</Text>
+        </View>
+
+        <TouchableOpacity onPress={() => setHidden(!hidden)}>
+          <MaterialIcons
+            name={hidden ? "visibility-off" : "visibility"}
+            size={20}
+            color="#fff"
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* Balance Show Here (Refresh icon removed) */}
+      <View style={styles.middleRow}>
+        <Text style={styles.balanceMain}>
+          {hidden ? "****  ****" : `৳ ${Number(balance).toLocaleString()}`}
+        </Text>
+      </View>
+
+      {/* Bottom right stars (like your image) */}
+      <View style={styles.bottomRow}>
+        <Text style={styles.balanceText}>****  ****</Text>
+      </View>
+
+    </LinearGradient>
+
+
+
             <Text>    </Text>
             <Text>   SELECT METHOD : </Text>
             <View style={styles.gatewayContainer}>
@@ -131,8 +166,8 @@ return ()=>clearInterval(interval);
               >
                 <Image source={item.image} style={styles.gatewayImage} />
                 <Text style={styles.gatewayLabel}>{item.name}</Text>
-                <Text> ৳500.00 - ৳ 50,000.00</Text>
-                <Text style={styles.instant}> ⚡ Instant</Text>
+                <Text > ৳25,000.00 - ৳ 1,00,000.00</Text>
+                <Text style={styles.instant}> ⏳ Instant</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -246,14 +281,14 @@ submitBtn: {
     alignSelf: 'center'
   },
   instant: {
-    backgroundColor: "#89f0a441",
+    backgroundColor: "#7777777a",
     padding: 5,
     borderRadius: 20,
     alignItems: "center",
     marginTop: 10,
     width: '60%',
     alignSelf: 'center',
-    color: "#45574aff"
+    color: "#ffee00ff"
   },
 
   submitText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
@@ -331,5 +366,81 @@ progress:{
   borderBottomLeftRadius:10,
   borderBottomRightRadius:10
 },
+
+card: {
+    height: 170,
+    borderRadius: 18,
+    padding: 16,
+    overflow: "hidden",
+    justifyContent: "space-between",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+
+  wave1: {
+    position: "absolute",
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    top: -120,
+    right: -100,
+  },
+
+  wave2: {
+    position: "absolute",
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: "rgba(255,255,255,0.06)",
+    top: -80,
+    right: -40,
+  },
+
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  title: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+
+  refreshBtn: {
+    width: 45,
+    height: 45,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+
+  balanceText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+    letterSpacing: 2,
+  },
+
+   middleRow: {
+    justifyContent: "center",
+    alignItems: "flex-start",
+    marginTop: -15,
+  },
+
+  balanceMain: {
+    color: "#fff",
+    fontSize: 26,
+    fontWeight: "bold",
+  },
 
 })

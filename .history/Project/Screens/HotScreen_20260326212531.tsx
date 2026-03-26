@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import { Animated } from "react-native";
 import pay from '../Screens/assets/pay.png';
+import LinearGradient from "react-native-linear-gradient";
 
 
 
@@ -20,49 +21,39 @@ const names = [
 
 const amounts = [50000,28000,32000,25500,75000,72000,100000, 27000, 25000, 28000, 34000, 48500, 57000, 47000, 88000, 34000, 48500, 77000, 75000,72500,100000, 25000, 25000, 50000,28000,52000,25500,75000, 25000, 58450, 90000, 45000, 25000, 45000, 70000, 71000, 54000, 25000, 26000, 29000, 54000, 25000, 26000, 29000,54000, 25000, 26000, 29000, ]
 
-const [liveMulti,setLiveMulti] = useState(1.00)
+
 // screen size thik rakar jonno
 import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
 const cardWidth = (screenWidth - 40) / 3;
-const displayMulti = Math.max(7, liveMulti + Math.random()*5)
 
 
 
 const games = [ 
-    { id: "1", title: "AVIATOR GAME", image: require("../Screens/assets/aviator.png"), action: "screen", screen: "AVIATOR GAME" },  // popup er oikany screen dile oi screen open hby
-    { id: "2", title: "ANDAR & BAHAR", image: require("../Screens/assets/andar bahar (1).png"), action: "popup" }, 
-    { id: "3", title: "PLINKO GAME", image: require("../Screens/assets/pling.png"), action: "popup" }, 
-    { id: "4", title: "CRAZY TIME", image: require("../Screens/assets/crazy_time.png"), action: "popup" }, 
-    { id: "5", title: "DRAGON VS TIGER", image: require("../Screens/assets/lion vs tiger.png"), action: "popup" }, 
-    { id: "6", title: "3 PATTI", image: require("../Screens/assets/3patti (1).png"), action: "popup" }, 
-    { id: "7", title: "777", image: require("../Screens/assets/777 (1).png"), action: "popup" }, 
+    { id: "1", title: "AVIATOR GAME", image: require("../Screens/assets/aviator.png"), action: "screen", screen: "AVIATOR GAME" },  // popup er oikany screen dile oi screen open hby 
+    // { id: "2", title: "CK666", image: require("../Screens/assets/666.png"), action: "popup" },
+    { id: "3", title: "CRAZY TIME", image: require("../Screens/assets/crazy_time.png"), action: "popup" }, 
+    { id: "4", title: "JILI", image: require("../Screens/assets/jili.png"), action: "popup" }, 
+    { id: "5", title: "SuperAce", image: require("../Screens/assets/superace.png"), action: "popup" },
+    //{ id: "6", title: "CRAZY TIME", image: require("../Screens/assets/crazy_time.png"), action: "popup" }, 
+    { id: "7", title: "DRAGON VS TIGER", image: require("../Screens/assets/lion vs tiger.png"), action: "popup" },
     { id: "8", title: "CRAZY-777", image: require("../Screens/assets/crazy-777 (1).png"), action: "popup" }, 
-    { id: "9", title: "HELICOPTER", image: require("../Screens/assets/helicopter.png"), action: "popup" }, 
-    { id: "10", title: "JILI", image: require("../Screens/assets/jili.png"), action: "popup" }, 
-    { id: "11", title: "SuperAce", image: require("../Screens/assets/superace.png"), action: "popup" }, 
-    { id: "12", title: "COIN TOSS", image: require("../Screens/assets/Coin-Toss.png"), action: "popup",},  // popup er oikany screen dile oi screen open hby
-    { id: "13", title: "CK444", image: require("../Screens/assets/444.png"), action: "popup" }, 
-    { id: "14", title: "BOXING KING", image: require("../Screens/assets/Boxing.png"), action: "popup" }, 
-    { id: "15", title: "GOLDEN TREASURE", image: require("../Screens/assets/golden.png"), action: "popup" }, 
-    { id: "16", title: "CHIKEN ROAD", image: require("../Screens/assets/chiken.png"), action: "popup" }, 
-    { id: "17", title: "7UP 7DOWN", image: require("../Screens/assets/7-Up-7-Down.png"), action: "popup" }, 
-    { id: "18", title: "CHICKY RUN", image: require("../Screens/assets/chicky-run.png"), action: "popup" }, 
-    { id: "19", title: "POKER KINGDOM", image: require("../Screens/assets/Poker_Kingdom.png"), action: "popup" },
-    { id: "20", title: "HELICOPTER", image: require("../Screens/assets/helicopter.png"), action: "popup" }, 
-     { id: "22", title: "Mega Ace", image: require("../Screens/assets/mega ace.png"), action: "popup" }, 
-     { id: "23", title: "LUCKY FORTUNES", image: require("../Screens/assets/luckyf.png"), action: "popup", },  // popup er oikany screen dile oi screen open hby
-    { id: "24", title: "GOLDEN TIME", image: require("../Screens/assets/golden.png"), action: "popup" }, 
-    { id: "25", title: "TEEN PATTI", image: require("../Screens/assets/teen.png"), action: "popup" }, 
-    { id: "26", title: "SABA SPORTS", image: require("../Screens/assets/saba (1).png"), action: "popup",},
-    { id: "27", title: "POKER GAME", image: require("../Screens/assets/Poker_Kingdom.png"), action: "popup" }, 
-    { id: "28", title: "PINK JOKER", image: require("../Screens/assets/pink.png"), action: "popup" },
-    { id: "29", title: "WILD ACE", image: require("../Screens/assets/wild ace.png"), action: "popup" }, 
-    { id: "30", title: "JILI GOLD CARD", image: require("../Screens/assets/jili (1).png"), action: "popup" }, 
-    { id: "31", title: "LUDO BOARD", image: require("../Screens/assets/Ludo Board.png"), action: "popup" }, 
-    { id: "32", title: "BG LIVE", image: require("../Screens/assets/BG.png"), action: "popup" }, 
-    { id: "33", title: "EVO LIVE", image: require("../Screens/assets/EVO.png"), action: "popup" },
-    { id: "61", title: "GOLDEN TREASURE", image: require("../Screens/assets/golden.png"), action: "popup" }, 
+    { id: "9", title: "BOXING KING", image: require("../Screens/assets/Boxing.png"), action: "popup" }, 
+    { id: "10", title: "GOLDEN TREASURE", image: require("../Screens/assets/golden.png"), action: "popup" },
+    { id: "11", title: "7UP 7DOWN", image: require("../Screens/assets/7-Up-7-Down.png"), action: "popup" }, 
+    { id: "12", title: "LUCKY FORTUNES", image: require("../Screens/assets/luckyf.png"), action: "popup", },  // popup er oikany screen dile oi screen open hby
+    { id: "13", title: "GOLDEN TIME", image: require("../Screens/assets/golden.png"), action: "popup" }, 
+    { id: "14", title: "POKER GAME", image: require("../Screens/assets/Poker_Kingdom.png"), action: "popup" }, 
+    { id: "15", title: "PINK JOKER", image: require("../Screens/assets/pink.png"), action: "popup" }, 
+    { id: "16", title: "LUDO BOARD", image: require("../Screens/assets/Ludo Board.png"), action: "popup" }, 
+    { id: "17", title: "BG LIVE", image: require("../Screens/assets/BG.png"), action: "popup" }, 
+    { id: "18", title: "EVO LIVE", image: require("../Screens/assets/EVO.png"), action: "popup" }, 
+    { id: "19", title: "LUCKY SCORE", image: require("../Screens/assets/Lucky.png"), action: "popup" }, 
+    { id: "20", title: "WILD ACE", image: require("../Screens/assets/wild ace.png"), action: "popup" }, 
+    { id: "21", title: "JILI GOLD CARD", image: require("../Screens/assets/jili (1).png"), action: "popup" }, 
+    { id: "22", title: "TEEN PATTI", image: require("../Screens/assets/teen.png"), action: "popup" }, 
+    { id: "23", title: "SABA SPORTS", image: require("../Screens/assets/saba (1).png"), action: "popup"},
+    { id: "33", title: "GOLDEN TREASURE", image: require("../Screens/assets/golden.png"), action: "popup" }, 
     { id: "34", title: "Golden Bank", image: require("../Screens/assets/golden bank.png"), action: "popup" }, 
     { id: "35", title: "SUPER WIN", image: require("../Screens/assets/super.png"), action: "popup" }, 
     { id: "36", title: "CALL BREAK", image: require("../Screens/assets/callbreak.png"), action: "popup" }, 
@@ -90,18 +81,51 @@ const games = [
     { id: "58", title: "BANG BANG", image: require("../Screens/assets/jungle bang bang.png"), action: "popup" }, 
     { id: "59", title: "PERFECT CATCH", image: require("../Screens/assets/perfect catch.png"), action: "popup" }, 
     { id: "60", title: "MINES GAME", image: require("../Screens/assets/mins game.png"), action: "popup" },
+    { id: "61", title: "BINGO ROLL", image: require("../Screens/assets/bingo roll (1).png"), action: "popup", },  // popup er oikany screen dile oi screen open hby
+    { id: "62", title: "EGYPTIAN MINES", image: require("../Screens/assets/egyptian mines (1).png"), action: "popup" }, 
+    { id: "63", title: "LADDER GAME", image: require("../Screens/assets/ladder game (1).png"), action: "popup" }, 
+    { id: "64", title: "HEIST", image: require("../Screens/assets/heist (1).png"), action: "popup" }, 
+    { id: "65", title: "TREADMILL RACING", image: require("../Screens/assets/treadmil racing (1).png"), action: "popup" }, 
+    { id: "66", title: "ANIMAL RACE", image: require("../Screens/assets/animal race (1).png"), action: "popup" }, 
+    { id: "67", title: "FanTan", image: require("../Screens/assets/fan tan (1).png"), action: "popup" }, 
+    { id: "68", title: "HOUND RACING", image: require("../Screens/assets/hound racing (1).png"), action: "popup" }, 
+    { id: "69", title: "BICHO", image: require("../Screens/assets/bicho (1).png"), action: "popup" }, 
+    { id: "70", title: "Xoc Dia", image: require("../Screens/assets/xoc dia (1).png"), action: "popup" }, 
+    { id: "71", title: "OAN TUTI", image: require("../Screens/assets/oan tuti (2).png"), action: "popup" }, 
+    { id: "72", title: "FISH PRAWN CRAB", image: require("../Screens/assets/fish prawn crab.png"), action: "popup",},  // popup er oikany screen dile oi screen open hby
+    { id: "73", title: "BLACK JACK", image: require("../Screens/assets/black jack.png"), action: "popup" }, 
+    { id: "74", title: "BJ LUCKY LADIES", image: require("../Screens/assets/black jack lucky.png"), action: "popup" }, 
+    { id: "75", title: "PussY go", image: require("../Screens/assets/pussy go.png"), action: "popup" }, 
+    { id: "76", title: "VIDEO POKER", image: require("../Screens/assets/video poker.png"), action: "popup" }, 
+    { id: "77", title: "MINE SWEEPER", image: require("../Screens/assets/mine sweeper.png"), action: "popup" }, 
+    { id: "78", title: "TEEN PAATY", image: require("../Screens/assets/teen patty.png"), action: "popup" }, 
+    { id: "79", title: "CASH ROCKET", image: require("../Screens/assets/cash rocket.png"), action: "popup" },
+    { id: "80", title: "13 KILLER", image: require("../Screens/assets/13 killer.png"), action: "popup", },  // popup er oikany screen dile oi screen open hby
+    { id: "81", title: "TANGKAS", image: require("../Screens/assets/bola tangkas.png"), action: "popup" }, 
+    { id: "82", title: "SCARD POKER", image: require("../Screens/assets/scard poker.png"), action: "popup" },
+    { id: "83", title: "TREASURE ISLAND", image: require("../Screens/assets/treasure island.png"), action: "popup", },  // popup er oikany screen dile oi screen open hby
+    { id: "84", title: "BAI BUU", image: require("../Screens/assets/bai buu.png"), action: "popup" }, 
+    { id: "85", title: "TONGITS", image: require("../Screens/assets/tongits.png"), action: "popup" }, 
+    { id: "86", title: "POK DENG", image: require("../Screens/assets/pok deng.png"), action: "popup" }, 
+    { id: "87", title: "PAIKANG", image: require("../Screens/assets/paikang.png"), action: "popup" }, 
+    { id: "88", title: "BACCARAT C09", image: require("../Screens/assets/baccarat c09.png"), action: "popup" }, 
+    { id: "89", title: "MONEY TIME", image: require("../Screens/assets/money time.png"), action: "popup" }, 
+    { id: "90", title: "ROULETTE LUBBY", image: require("../Screens/assets/roulette lubby.png"), action: "popup" }, 
+    { id: "91", title: "SIC BO", image: require("../Screens/assets/sic bo (1).png"), action: "popup" },
+    
+    
 ];
 
 
 
-export default function SlotScreen () {
+export default function HotScreen () {
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);  // pop up anar jonno use
     const scaleAnim = useRef(new Animated.Value(0)).current;  // pop up anar jonno use
     
-// cash out toost er jonno
 const [cashData, setCashData] = useState(null);
 const progressAnim = useRef(new Animated.Value(1)).current;
+
 
     const openPopup = () => {
       setModalVisible(true);
@@ -134,40 +158,40 @@ const progressAnim = useRef(new Animated.Value(1)).current;
     };
     
     
+
+
+
+    // cashout massage er jonno 
+    useEffect(() => {
     
-
-
-// cashout massage er jonno 
-useEffect(() => {
-
-const interval = setInterval(() => {
-
-  const name = names[Math.floor(Math.random()*names.length)];
-  const amount = amounts[Math.floor(Math.random()*amounts.length)];
-  const method = methods[Math.floor(Math.random()*methods.length)];
-
-  setCashData({
-    name,
-    amount,
-    method
-  });
-
-  progressAnim.setValue(1);
-
-  // progress bar animation (5 sec)
-  Animated.timing(progressAnim,{
-    toValue: 0,
-    duration: 5000,
-    useNativeDriver: false
-  }).start(() => {
-    setCashData(null);
-  });
-
-},10000); // every 10 sec
-
-return ()=>clearInterval(interval);
-
-},[]);
+    const interval = setInterval(() => {
+    
+      const name = names[Math.floor(Math.random()*names.length)];
+      const amount = amounts[Math.floor(Math.random()*amounts.length)];
+      const method = methods[Math.floor(Math.random()*methods.length)];
+    
+      setCashData({
+        name,
+        amount,
+        method
+      });
+    
+      progressAnim.setValue(1);
+    
+      // progress bar animation (5 sec)
+      Animated.timing(progressAnim,{
+        toValue: 0,
+        duration: 5000,
+        useNativeDriver: false
+      }).start(() => {
+        setCashData(null);
+      });
+    
+    },10000); // every 10 sec
+    
+    return ()=>clearInterval(interval);
+    
+    },[]);
 
 
 
@@ -195,8 +219,14 @@ return ()=>clearInterval(interval);
 
 
     return(
-        <ScrollView style={{ backgroundColor: "#225c14c0"}} >
-        {/** pop up uner jonno daoya */ }     
+      <LinearGradient
+        colors={["#020617", "#0b1220", "#0f172a"]}
+        start={{x:0, y:0}}
+        end={{x:1, y:1}}
+        style={{flex:1}}
+      >
+        <ScrollView>
+        {/** pop up uner jonno daoya */  }     
           <Modal transparent visible={modalVisible} animationType="fade">
           <View style={styles.overlay}>
         
@@ -221,41 +251,41 @@ return ()=>clearInterval(interval);
         </Animated.View>
         </View>
         </Modal>
-
-
-
-
-
+        
         <View style={styles.gamesContainer}>  
-  {games.map((game) => (
-    <TouchableOpacity 
-      key={game.id} 
-      style={styles.gameCard}
-      onPress={() => handleGamePress(game)}
-    >
-
-      {/* ✅ শুধু AVIATOR এ LIVE দেখাবে */}
-      {game.title === "AVIATOR GAME" && (
-        <Animated.View style={[styles.liveBadge, { opacity: blinkAnim }]}>
-          <Text style={styles.liveText}>🔴 LIVE</Text>
-        </Animated.View>
-      )}
-
-      <Image source={game.image} style={styles.gameImage} />
-      
-      {game.title === "AVIATOR GAME" && (
-        <View style={styles.liveMultiplier}>
-          <Text style={styles.liveMultiplierText}>
-            {displayMulti.toFixed(2)}x
-          </Text>
+          {games.map((game) => (
+            <TouchableOpacity 
+              key={game.id} 
+              style={styles.gameCard}
+              onPress={() => handleGamePress(game)}
+            >
+        
+              {/* ✅ শুধু AVIATOR এ LIVE দেখাবে */}
+              {game.title === "AVIATOR GAME" && (
+                <Animated.View style={[styles.liveBadge, { opacity: blinkAnim }]}>
+                  <Text style={styles.liveText}>🔴 LIVE</Text>
+                </Animated.View>
+              )}
+        
+              <Image source={game.image} style={styles.gameImage} />
+              
+              {game.title === "AVIATOR GAME" && (
+                <View style={styles.liveMultiplier}>
+                  <Text style={styles.liveMultiplierText}>
+                    {displayMulti.toFixed(2)}x
+                  </Text>
+                </View>
+              )}
+        
+              <Text style={styles.gameTitle}>{game.title}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
-      )}
 
-      <Text style={styles.gameTitle}>{game.title}</Text>
-    </TouchableOpacity>
-  ))}
-</View>
 
+        <View style={styles.text}> 
+            <Text style={styles.text2}> More game Coming Soon ........!</Text>
+        </View>
 
 
         <View style={styles.payImageContainer}>
@@ -265,39 +295,38 @@ return ()=>clearInterval(interval);
                    style={styles.payImage2} />
         </View>
 
-        
-{cashData && (
-<View style={styles.cashBox}>
-
-  <Image source={cashData.method.icon} style={styles.cashIcon} />
-
-  <View style={{flex:1}}>
-    <Text style={styles.cashTitle}>
-      {cashData.name}
-    </Text>
-
-    <Text style={styles.cashSub}>
-      Cash out ৳{cashData.amount}
-    </Text>
-  </View>
-
-  {/* progress bar */}
-  <Animated.View
-    style={[
-      styles.progress,
-      {
-        width: progressAnim.interpolate({
-          inputRange:[0,1],
-          outputRange:["0%","100%"]
-        })
-      }
-    ]}
-  />
-
-</View>
-)}     
+    {cashData && (
+    <View style={styles.cashBox}>
+    
+      <Image source={cashData.method.icon} style={styles.cashIcon} />
+    
+      <View style={{flex:1}}>
+        <Text style={styles.cashTitle}>
+          {cashData.name}
+        </Text>
+    
+        <Text style={styles.cashSub}>
+          Cash out ৳{cashData.amount}
+        </Text>
+      </View>
+    
+      {/* progress bar */}
+      <Animated.View
+        style={[
+          styles.progress,
+          {
+            width: progressAnim.interpolate({
+              inputRange:[0,1],
+              outputRange:["0%","100%"]
+            })
+          }
+        ]}
+      />
+    
+    </View>
+    )}    
         </ScrollView>
-        
+        </LinearGradient>
     )
 }
 
@@ -347,7 +376,7 @@ gamesContainer: {
   flexDirection: 'row',
   justifyContent: 'center',
   flexWrap: "wrap", 
-  marginTop: 10,
+  marginTop: 19,
 },
 gameCard: {
     width: cardWidth,        // 2 column layout
@@ -355,7 +384,7 @@ gameCard: {
     marginBottom: 10,
     borderRadius: 12,
     overflow: "hidden",
-    backgroundColor: "#271d1dff",
+    backgroundColor: "#7bd5e0ff",
     alignItems: "center",
     justifyContent: 'center',
     margin: 5,
@@ -372,7 +401,7 @@ gameCard: {
     resizeMode: "cover",
   },
   gameTitle: {
-    color: "#fff",
+    color: "#000000ff",
     fontSize: 11,
     marginTop: 2,
     textAlign: "center",
@@ -463,22 +492,7 @@ progress:{
   borderBottomLeftRadius:10,
   borderBottomRightRadius:10
 },
-liveMultiplier:{
-position:"absolute",
-bottom:17,
-right:1,
-backgroundColor:"#000000aa",
-paddingHorizontal:8,
-paddingVertical:3,
-borderRadius:6,
 
-},
-
-liveMultiplierText:{
-color:"#22c55e",
-fontWeight:"bold",
-fontSize:14
-},
 
 
 })

@@ -20,12 +20,12 @@ const names = [
 
 const amounts = [50000,28000,32000,25500,75000,72000,100000, 27000, 25000, 28000, 34000, 48500, 57000, 47000, 88000, 34000, 48500, 77000, 75000,72500,100000, 25000, 25000, 50000,28000,52000,25500,75000, 25000, 58450, 90000, 45000, 25000, 45000, 70000, 71000, 54000, 25000, 26000, 29000, 54000, 25000, 26000, 29000,54000, 25000, 26000, 29000, ]
 
-const [liveMulti,setLiveMulti] = useState(1.00)
+
 // screen size thik rakar jonno
 import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
 const cardWidth = (screenWidth - 40) / 3;
-const displayMulti = Math.max(7, liveMulti + Math.random()*5)
+
 
 
 
@@ -463,22 +463,7 @@ progress:{
   borderBottomLeftRadius:10,
   borderBottomRightRadius:10
 },
-liveMultiplier:{
-position:"absolute",
-bottom:17,
-right:1,
-backgroundColor:"#000000aa",
-paddingHorizontal:8,
-paddingVertical:3,
-borderRadius:6,
 
-},
-
-liveMultiplierText:{
-color:"#22c55e",
-fontWeight:"bold",
-fontSize:14
-},
 
 
 })

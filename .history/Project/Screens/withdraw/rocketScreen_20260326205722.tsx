@@ -14,7 +14,7 @@ import { DepositContext } from "../context/DepositContext";
 import { CashoutContext } from "../context/CashoutContext";
 
 
-export default function WupayScreen() {
+export default function WrocketScreen() {
  const { balance, setBalance } = useContext(DepositContext);
   const navigation = useNavigation();
   const route = useRoute();
@@ -24,7 +24,7 @@ const { addCashout } = useContext(CashoutContext);
   const [amount, setAmount] = useState("");
 const [loading, setLoading] = useState(false);
   // quick amount buttons
-  const quickAmounts = [ 25000, 30000, 50000, 70000, 100000];
+  const quickAmounts = [ 1000, 2000, 5000, 10000, 20000];
 
 
   const numAmount = Number(amount);
@@ -45,35 +45,33 @@ const [loading, setLoading] = useState(false);
     }
 
     if (!number) {
-      Alert.alert("Error", "Upay নাম্বার দিন");
+      Alert.alert("Error", "Rocket নাম্বার দিন");
       return;
     }
 
     if (number.length < 11) {
-      Alert.alert("Error", "Valid Upay নাম্বার দিন");
+      Alert.alert("Error", "Valid Rocket নাম্বার দিন");
       return;
     }
 
-
-    // ✅ Start loading
+     // ✅ Start loading
   setLoading(true);
 
+  // ✅ balance cut
+  setBalance(prev => prev - numAmount);
 
-    // ✅ balance cut
-    setBalance(prev => prev - numAmount);
+  const trxId = "TRX" + Math.floor(100000000 + Math.random() * 900000000);
 
-const trxId = "TRX" + Math.floor(100000000 + Math.random() * 900000000);
+  addCashout({
+    id: Date.now().toString(),
+    method: data?.name || "bKash",
+    amount: numAmount,
+    status: "Pending",
+    number: number,
+    date: new Date().toLocaleString()
+  });
 
-addCashout({
-  id: Date.now().toString(),
-  method: data?.name || "Upay",
-  amount: numAmount,
-  status: "Pending",
-  number: number,
-  date: new Date().toLocaleString()
-});
-
-   // simulate 2 seconds delay for better UX
+  // simulate 2 seconds delay for better UX
   setTimeout(() => {
     setLoading(false);
     Alert.alert("Success ✅", `Withdraw Request ৳${numAmount} Submitted`, [
@@ -88,6 +86,7 @@ addCashout({
     ]);
   }, 2000);
 };
+
 
   return (
     <View style={styles.container}>
@@ -109,7 +108,7 @@ addCashout({
       <View style={styles.methodBox}>
         <View>
                  <Image
-                  source={require('../assets/upay.png')}
+                  source={require('../assets/rocket.png')}
                   style={{ 
                     width: 160, 
                     height: 47, 
@@ -122,7 +121,7 @@ addCashout({
 
 
         <View>  
-        <Text style={styles.methodTitle}>{data?.name || "Upay"}</Text>
+        <Text style={styles.methodTitle}>{data?.name || "Rocket"}</Text>
         <Text style={styles.range}>৳25,000.00 - ৳1,00,000.00</Text>
         </View>
       </View>
@@ -180,7 +179,7 @@ addCashout({
               value={number}
               onChangeText={setNumber}
               keyboardType="numeric"
-              placeholder="Enter Upay number"
+              placeholder="Enter Rocket number"
               placeholderTextColor="#999"
               style={styles.input}
               maxLength={11}
