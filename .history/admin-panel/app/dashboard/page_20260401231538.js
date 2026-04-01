@@ -898,15 +898,9 @@ const getTabs = () => {
       <p className="text-gray-400">No deposit requests yet.</p>
     )}
 
-    <input
-  type="text"
-  placeholder="Search by Username, Phone, UID, TRX ID..."
-  value={depositSearch}
-  onChange={(e) => setDepositSearch(e.target.value)}
-  className="w-full p-2 rounded bg-gray-800 text-white border border-gray-700 mb-4"
-/>
+    
 
-    {filteredDepositsList.map((d) => {
+    {deposits.map((d) => {
       const modal = depositModal[d.id] || { open: false, adminNote: "" };
       const status = d.status || "Pending";
 
@@ -1119,15 +1113,7 @@ const getTabs = () => {
             <p className="text-gray-400">No withdraw requests yet.</p>
           )}
 
-          <input
-  type="text"
-  placeholder="Search by Username, UID, Number, Status..."
-  value={withdrawSearch}
-  onChange={(e) => setWithdrawSearch(e.target.value)}
-  className="w-full p-2 rounded bg-gray-800 text-white border border-gray-700 mb-4"
-/>
-
-          {filteredWithdrawList.map((w) => {
+          {withdraws.map((w) => {
             const modal = withdrawModal[w.id] || { open: false, adminNote: "" };
             const status = w.status || "Pending";
 

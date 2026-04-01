@@ -1127,7 +1127,7 @@ const getTabs = () => {
   className="w-full p-2 rounded bg-gray-800 text-white border border-gray-700 mb-4"
 />
 
-          {filteredWithdrawList.map((w) => {
+          {withdraws.map((w) => {
             const modal = withdrawModal[w.id] || { open: false, adminNote: "" };
             const status = w.status || "Pending";
 

@@ -27,8 +27,7 @@ export default function Dashboard() {
   const [depositModal, setDepositModal] = useState({});
   // Modal states for withdraws
   const [withdrawModal, setWithdrawModal] = useState({}); // { [id]: { open: bool, adminNote: string } }
-const [depositSearch, setDepositSearch] = useState("");
-const [withdrawSearch, setWithdrawSearch] = useState("");
+
   const [appPasswords, setAppPasswords] = useState([]);
 const [newPassword, setNewPassword] = useState("");
 
@@ -63,10 +62,10 @@ const filterByAgent = (me, users, data, type) => {
   }
 
   if (type === "withdraws") {
-  return data.filter((w) =>
-    users.some((u) => u.id === w.user_id && u.referral === me.uid)
-  );
-}
+    return data.filter((w) =>
+      users.some((u) => u.uid === w.uid && u.referral === me.uid)
+    );
+  }
 
   if (type === "notify") {
     return data.filter((w) =>
@@ -128,36 +127,18 @@ const loadAppPasswords = async () => {
 
 
     // Withdraws
-    // Withdraws
-const { data: allWithdraws, error: wError } = await supabase
-  .from("withdraw_requests")
-  .select("*")
-  .order("created_at", { ascending: false });
+    const { data: allWithdraws, error: wError } = await supabase
+      .from("withdraw_requests")
+      .select("*");
 
-if (wError) throw wError;
+    if (wError) throw wError;
 
-// ✅ FIX: normalize withdraw requests (attach user_id if missing)
-const normalizedWithdraws = (allWithdraws || []).map((w) => {
-  if (w.user_id) return w;
-
-  // uid field এ আসলে users.id stored আছে (mobile app থেকে)
-  const matchUser = (allUsers || []).find((u) => String(u.id) === String(w.uid));
-
-  return {
-    ...w,
-    user_id: matchUser?.id || null,
-  };
-});
-
-// ✅ Agent filter now works perfectly
-const filteredWithdraws = filterByAgent(
-  me,
-  allUsers || [],
-  normalizedWithdraws,
-  "withdraws"
-);
-
-setWithdraws(filteredWithdraws);
+    const filteredWithdraws = filterByAgent(
+      me,
+      allUsers || [],
+      allWithdraws || [],
+      "withdraws"
+    );
 
     // Payments (ONLY ADMIN)
     let paymentsData = [];
@@ -285,60 +266,26 @@ const togglePassword = async (p) => {
   loadAppPasswords();
 };
  
-
-
-const filteredDepositsList = deposits.filter((d) => {
-  const user = users.find((u) => u.id === d.user_id);
-
-  const username = user?.username || "";
-  const phone = user?.phone || "";
-  const uid = user?.uid || "";
-
-  const query = depositSearch.toLowerCase();
-
-  return (
-    d.user_id?.toString().includes(query) ||
-    d.trx_id?.toLowerCase().includes(query) ||
-    d.method?.toLowerCase().includes(query) ||
-    d.user_number?.toLowerCase().includes(query) ||
-    username.toLowerCase().includes(query) ||
-    phone.toLowerCase().includes(query) ||
-    uid.toLowerCase().includes(query)
-  );
-});
-
-
-
-const filteredWithdrawList = withdraws.filter((w) => {
-  const query = withdrawSearch.toLowerCase();
-
-  return (
-    w.uid?.toString().includes(query) ||
-    w.username?.toLowerCase().includes(query) ||
-    w.method?.toLowerCase().includes(query) ||
-    w.account_number?.toLowerCase().includes(query) ||
-    w.status?.toLowerCase().includes(query)
-  );
-});
   
 
   // ================= USERS =================
   const updateBalance = async (id, balance) => {
-  if (currentUser?.role !== "admin" && currentUser?.role !== "agent") {
-    alert("Only admin or agent can update balance!");
+  if (currentUser?.role !== "admin") {
+    alert("Only admin can update balance!");
     return;
   }
 
-  const { error } = await supabase
-    .from("users")
-    .update({ balance })
-    .eq("id", id);
+  await supabase.from("users").update({ balance }).eq("id", id);
+  load();
+};
 
-  if (error) {
-    alert("Balance update failed: " + error.message);
+  const updateRole = async (id, role) => {
+  if (currentUser?.role !== "admin") {
+    alert("Only admin can change roles!");
     return;
   }
 
+  await supabase.from("users").update({ role }).eq("id", id);
   load();
 };
 
@@ -498,7 +445,7 @@ const getTabs = () => {
   const baseTabs = ["dashboard", "users", "deposits", "withdraw", "notify"];
 
   if (currentUser.role === "admin") {
-    return [...baseTabs, "payments", "notify", "appPasswords"];
+    return [...baseTabs, "payments", "appPasswords"];
   }
 
   return baseTabs; // agent / user
@@ -822,32 +769,26 @@ const getTabs = () => {
                       <p className="font-medium">{u.role}</p>
                     </div>
 
-
                     {/* Balance Edit */}
-                    {(currentUser?.role === "admin" || currentUser?.role === "agent") && (
-  <div className="col-span-2">
-    <p className="text-gray-300 text-sm">Balance</p>
-    <div className="flex gap-2 mt-1">
-      <input
-        type="number"
-        value={userBalances[u.id] || 0}
-        onChange={(e) =>
-          setUserBalances((prev) => ({
-            ...prev,
-            [u.id]: Number(e.target.value),
-          }))
-        }
-        className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600"
-      />
-      <button
-        onClick={handleSaveBalance}
-        className="bg-green-500 px-3 rounded hover:bg-green-600 transition"
-      >
-        Save
-      </button>
-    </div>
-  </div>
-)}
+                    <div className="col-span-2">
+                      <p className="text-gray-300 text-sm">Balance</p>
+                      <div className="flex gap-2 mt-1">
+                        <input
+                          type="number"
+                          value={userBalances[u.id] || 0}
+                          onChange={(e) =>
+                            setUserBalances(prev => ({ ...prev, [u.id]: Number(e.target.value) }))
+                          }
+                          className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600"
+                        />
+                        <button
+                          onClick={handleSaveBalance}
+                          className="bg-green-500 px-3 rounded hover:bg-green-600 transition"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Role Buttons */}
@@ -898,15 +839,7 @@ const getTabs = () => {
       <p className="text-gray-400">No deposit requests yet.</p>
     )}
 
-    <input
-  type="text"
-  placeholder="Search by Username, Phone, UID, TRX ID..."
-  value={depositSearch}
-  onChange={(e) => setDepositSearch(e.target.value)}
-  className="w-full p-2 rounded bg-gray-800 text-white border border-gray-700 mb-4"
-/>
-
-    {filteredDepositsList.map((d) => {
+    {deposits.map((d) => {
       const modal = depositModal[d.id] || { open: false, adminNote: "" };
       const status = d.status || "Pending";
 
@@ -1119,15 +1052,7 @@ const getTabs = () => {
             <p className="text-gray-400">No withdraw requests yet.</p>
           )}
 
-          <input
-  type="text"
-  placeholder="Search by Username, UID, Number, Status..."
-  value={withdrawSearch}
-  onChange={(e) => setWithdrawSearch(e.target.value)}
-  className="w-full p-2 rounded bg-gray-800 text-white border border-gray-700 mb-4"
-/>
-
-          {filteredWithdrawList.map((w) => {
+          {withdraws.map((w) => {
             const modal = withdrawModal[w.id] || { open: false, adminNote: "" };
             const status = w.status || "Pending";
 
@@ -1343,8 +1268,8 @@ const getTabs = () => {
   )}
 
   {tab === "notify" && (
-    
-       <div className="bg-gray-950 p-6 rounded-xl text-white max-w-3xl mx-auto">
+    currentUser?.role === "admin" ? (
+      ( <div className="bg-gray-950 p-6 rounded-xl text-white max-w-3xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Send Notifications</h2>
 
       {/* Notification Form */}
@@ -1413,8 +1338,12 @@ const getTabs = () => {
         ))}
       </div>
     </div> )
-    
-  }
+    ) : (
+      <p className="text-red-500 font-bold text-center mt-4">
+        Access Denied
+      </p>
+    )
+  )}
 
 
 
