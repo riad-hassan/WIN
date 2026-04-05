@@ -6,8 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  Image,
-  ScrollView
+  Image
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -19,8 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
-
-export default function WupayScreen() {
+export default function WrocketScreen() {
   const { balance, withdrawBalance, setBalance } = useContext(DepositContext);
   const navigation = useNavigation();
   const route = useRoute();
@@ -59,65 +57,60 @@ const [loading, setLoading] = useState(false);
   if (!amount) return Alert.alert("Error", "Amount লিখুন");
   if (numAmount < 1000) return Alert.alert("Minimum", "সর্বনিম্ন ১,০০০ টাকা দিতে হবে");
   if (numAmount > balance) return Alert.alert("Error", "Insufficient Balance");
-  if (!number) return Alert.alert("Error", "Upay নাম্বার দিন");
-  if (number.length < 11) return Alert.alert("Error", "Valid Upay নাম্বার দিন");
+  if (!number) return Alert.alert("Error", "Rocket নাম্বার দিন");
+  if (number.length < 11) return Alert.alert("Error", "Valid Rocket নাম্বার দিন");
 
-
-  if (!userId) return Alert.alert("Error", "User not loaded");
-
+if (!userId) return Alert.alert("Error", "User not loaded");
 
   setLoading(true);
 
- // 🔹 Step 1: Deduct balance instantly
-   const success = await withdrawBalance(numAmount);
-   if (!success) {
-     setLoading(false);
-     return Alert.alert("Error", "Balance deduction failed");
-   }
- 
-   // 🔹 Step 2: Insert withdraw request for admin approval
-   const res = await supabase.from("withdraw_requests").insert([
-     {
-       uid: userId.toString(),
-       username: username,
-       method: data?.name || "Upay",
-       account_number: number,
-       amount: numAmount,
-       status: "Pending"
-     }
-   ]);
- 
-   setLoading(false);
- 
-   if (res.error) {
-     Alert.alert("Withdraw Failed", res.error.message);
-     // Optionally rollback balance
-     setBalance(prev => prev + numAmount);
-     return;
-   }
- 
-   addCashout({
-       id: Date.now().toString(),
-       method: data?.name || "Upay",
-       amount: numAmount,
-       status: "Pending",
-       number: number,
-       date: new Date().toLocaleString(),
-     });
- 
-   Alert.alert("Success ✅", `Withdraw Request ৳${numAmount} Submitted`, [
-     { text: "OK", onPress: () => navigation.reset({ index: 0, routes: [{ name: "MainTabs" }] }) },
-   ]);
- };
- 
- 
- const numAmount = Number(amount);
-
-
+  // 🔹 Step 1: Deduct balance instantly
+    const success = await withdrawBalance(numAmount);
+    if (!success) {
+      setLoading(false);
+      return Alert.alert("Error", "Balance deduction failed");
+    }
+  
+    // 🔹 Step 2: Insert withdraw request for admin approval
+    const res = await supabase.from("withdraw_requests").insert([
+      {
+        uid: userId.toString(),
+        username: username,
+        method: data?.name || "Rocket",
+        account_number: number,
+        amount: numAmount,
+        status: "Pending"
+      }
+    ]);
+  
+    setLoading(false);
+  
+    if (res.error) {
+      Alert.alert("Withdraw Failed", res.error.message);
+      // Optionally rollback balance
+      setBalance(prev => prev + numAmount);
+      return;
+    }
+  
+    addCashout({
+        id: Date.now().toString(),
+        method: data?.name || "Rocket",
+        amount: numAmount,
+        status: "Pending",
+        number: number,
+        date: new Date().toLocaleString(),
+      });
+  
+    Alert.alert("Success ✅", `Withdraw Request ৳${numAmount} Submitted`, [
+      { text: "OK", onPress: () => navigation.reset({ index: 0, routes: [{ name: "MainTabs" }] }) },
+    ]);
+  };
+  
+  
+  const numAmount = Number(amount);
 
 
   return (
-    <ScrollView style={{backgroundColor: "#0c0f1a"}} > 
     <View style={styles.container}>
 
         <View style={styles.infoBox}>
@@ -137,7 +130,7 @@ const [loading, setLoading] = useState(false);
       <View style={styles.methodBox}>
         <View>
                  <Image
-                  source={require('../assets/upay.png')}
+                  source={require('../assets/rocket.png')}
                   style={{ 
                     width: 160, 
                     height: 47, 
@@ -150,7 +143,7 @@ const [loading, setLoading] = useState(false);
 
 
         <View>  
-        <Text style={styles.methodTitle}>{data?.name || "Upay"}</Text>
+        <Text style={styles.methodTitle}>{data?.name || "Rocket"}</Text>
         <Text style={styles.range}>৳1,000.00 - ৳1,00,000.00</Text>
         </View>
       </View>
@@ -208,7 +201,7 @@ const [loading, setLoading] = useState(false);
               value={number}
               onChangeText={setNumber}
               keyboardType="numeric"
-              placeholder="Enter Upay number"
+              placeholder="Enter Rocket number"
               placeholderTextColor="#999"
               style={styles.input}
               maxLength={11}

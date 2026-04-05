@@ -522,7 +522,7 @@ const getTabs = () => {
   const baseTabs = ["dashboard", "users", "deposits", "withdraw", "notify"];
 
   if (currentUser.role === "admin") {
-    return [...baseTabs, "payments", "appPasswords"];
+    return [...baseTabs, "payments", "notify", "appPasswords"];
   }
 
   return baseTabs; // agent / user
@@ -532,7 +532,7 @@ const getTabs = () => {
     <div className="p-4 text-white">
 
       {/* 🔥 TOP MENU */}
-      
+      <div className="flex gap-2 mb-6 flex-wrap">
 
       <div className="flex gap-2 mb-6 flex-wrap items-center justify-between">
 
@@ -560,7 +560,7 @@ const getTabs = () => {
 
 </div>
 
-
+</div>
 
 {/* 2️⃣ Tab Content */}
  <div className="tab-content">

@@ -236,7 +236,6 @@ const [loading, setLoading] = useState(false);
       </TouchableOpacity>
 
     </View>
-    </ScrollView>
   );
 }
 

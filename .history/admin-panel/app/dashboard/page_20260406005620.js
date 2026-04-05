@@ -522,7 +522,7 @@ const getTabs = () => {
   const baseTabs = ["dashboard", "users", "deposits", "withdraw", "notify"];
 
   if (currentUser.role === "admin") {
-    return [...baseTabs, "payments", "appPasswords"];
+    return [...baseTabs, "payments", "notify", "appPasswords"];
   }
 
   return baseTabs; // agent / user
