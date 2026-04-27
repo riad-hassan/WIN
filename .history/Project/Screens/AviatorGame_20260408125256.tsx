@@ -1,0 +1,1764 @@
+import React, {useEffect,useState,useRef} from "react";
+import {
+View,
+Text,
+StyleSheet,
+Dimensions,
+Image,
+TouchableOpacity,
+TextInput,
+FlatList,
+ScrollView
+} from "react-native";
+import { Animated } from "react-native";
+import { useContext } from "react";
+import { DepositContext } from "../Screens/context/DepositContext";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import PixiGraph from "./PixiGraph";
+import Sound from "react-native-sound";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
+
+
+const methods = [
+  { name: "Bkash", icon: require("../Screens/assets/bkash.png") },
+  { name: "Nagad", icon: require("../Screens/assets/nogod.png") },
+  { name: "Rocket", icon: require("../Screens/assets/rocket.png") },
+];
+
+const names = [
+"Rahim332","KKarim43","Hasan5g","Sakiber4","Nayeemt54", "Molina32K", "Aktar354", "Jenijd", "gShofiq", "Soh...", "Barsha", "Abir", "Tahsin", "mehrab", "Rohan", "Naomi", "Maaryam", "mahin", "jahid", "	MAHDI", "Ridwan", "Shah", "Hridi", "Sanjana", "Saeed", "Protik",
+"Arif346","Jamal856","Sabbir573","Imran776","Rony734", "Kam...", "Era...","Samha", "Ruhani", "Muhu", "Asif", "Saliha", "Bushra", "Parban" ,"Omar", "Dina", "Amatullah", "Labiba", "Labib", "Rihaa", "Tasfin", "Rehanul", "nafis", "zawad", "Emu", "eblehe", "Nishat", "Shuvadip", "Faysal", "Arpi", "Mun", "Joy", 
+]
+
+const amounts = [50000,28000,32000,25500,75000,72000,100000, 27000, 25000, 28000, 34000, 48500, 57000, 47000, 88000, 34000, 48500, 77000, 75000,72500,100000, 25000, 25000, 50000,28000,52000,25500,75000, 25000, 58450, 90000, 45000, 25000, 45000, 70000, 71000, 54000, 25000, 26000, 29000, 54000, 25000, 26000, 29000,54000, 25000, 26000, 29000, ]
+
+
+// ⬇️ এখানে বসবে ডাবল বেটের জন্য 
+
+const BetPanel = React.memo(({
+  bet,
+  setBet,
+  mode,
+  setMode,
+  autoCash,
+  setAutoCash,
+  onBetPress,
+  buttonText,
+  buttonColor
+}) => {
+
+return(
+
+<View style={styles.betBox}>
+
+<View style={styles.modeRow}>
+
+<TouchableOpacity
+style={[styles.modeBtn,mode==="bet" && styles.activeMode]}
+onPress={()=>setMode("bet")}
+>
+<Text style={styles.modeText}>Bet</Text>
+</TouchableOpacity>
+
+<TouchableOpacity
+style={[styles.modeBtn,mode==="auto" && styles.activeMode]}
+onPress={()=>setMode("auto")}
+>
+<Text style={styles.modeText}>Auto</Text>
+</TouchableOpacity>
+
+</View>
+
+{/* AUTO CASHOUT */}
+
+{mode==="auto" && (
+
+<View style={styles.autoBox}>
+
+<Text style={{color:"#fff",marginRight:10, marginBottom:5,}}>
+Auto Cashout
+</Text>
+
+<TextInput
+style={styles.autoInput}
+value={autoCash}
+onChangeText={setAutoCash}
+keyboardType="numeric"
+/>
+
+</View>
+
+)}
+
+<View style={styles.mainRow}>
+
+{/* LEFT SIDE */}
+<View style={{flex:1}}>
+
+<View style={styles.betRow}>
+
+<TouchableOpacity
+style={styles.ctrl}
+onPress={()=>setBet(Math.max(1,parseInt(bet)-1).toString())}
+>
+<Text style={styles.ctrlText}>-</Text>
+</TouchableOpacity>
+
+<TextInput
+style={styles.input}
+value={bet}
+onChangeText={setBet}
+keyboardType="numeric"
+/>
+
+<TouchableOpacity
+style={styles.ctrl}
+onPress={()=>setBet((parseInt(bet)+1).toString())}
+>
+<Text style={styles.ctrlText}>+</Text>
+</TouchableOpacity>
+
+</View>
+
+<View style={styles.quickRow}>
+
+{[100,500,1000,10000].map(v=>(
+<TouchableOpacity
+key={v}
+style={styles.quick}
+onPress={()=>setBet(v.toString())}
+>
+<Text style={{color:"#fff",fontWeight:"bold"}}>{v}</Text>
+</TouchableOpacity>
+))}
+
+</View>
+
+</View>
+
+{/* RIGHT SIDE BET BUTTON */}
+
+<TouchableOpacity
+style={[styles.betBtn,{backgroundColor:buttonColor}]}
+onPress={onBetPress}
+>
+<Text style={{color:"#fff",fontWeight:"bold", textAlign:"center"}}>
+{buttonText}
+</Text>
+</TouchableOpacity>
+
+
+</View>
+</View>
+)
+})
+
+
+const PlayerRow = React.memo(({item}) => {
+const isWin = parseFloat(item.win) > 0;
+
+return(
+<View style={[
+styles.row,
+{ backgroundColor: isWin ? "#022c22" : "#2c0b0b" }
+]}>
+
+<Text style={styles.id}>
+ID {item.id}
+</Text>
+
+<Text
+style={styles.bet}
+numberOfLines={1}
+adjustsFontSizeToFit
+>
+{item.bet}
+</Text>
+
+<Text
+style={styles.multi}
+numberOfLines={1}
+adjustsFontSizeToFit
+>
+{item.multi}
+</Text>
+
+<Text
+style={[
+styles.win,
+{ color: isWin ? "#22c55e" : "#ef4444" }
+]}
+numberOfLines={1}
+adjustsFontSizeToFit
+>
+{isWin ? "+" : "-"}{item.win}৳
+</Text>
+</View>
+)
+})
+
+
+
+const generateInitialPlayers = () => {
+  const arr = [];
+
+  for (let i = 0; i < 50; i++) {
+    const id = Math.floor(Math.random() * 900000) + 100000;
+
+    const betAmount = [1000, 2500, 500, 6700, 5600][
+      Math.floor(Math.random() * 5)
+    ];
+
+    const multi = (1 + Math.random() * 4).toFixed(2);
+    const win = (betAmount * multi).toFixed(2);
+
+    arr.push({
+      id: String(id),
+      bet: betAmount,
+      multi: `${multi}x`,
+      win
+    });
+  }
+
+  return arr;
+};
+
+export default function AviatorScreen(){
+const SERVER = "https://grand-win-predictor.netlify.app/.netlify/functions";
+const [multiplier,setMultiplier] = useState(1)
+const [players,setPlayers] = useState([])
+useEffect(()=>{
+  setPlayers(generateInitialPlayers())
+},[])
+const crashPoint = useRef(2 + Math.random()*4)
+const [activeTab, setActiveTab] = useState("wins") // "wins" | "mybets"
+const [myBets, setMyBets] = useState([])
+
+
+
+const [bet1,setBet1] = useState("10") // double bet
+const [bet2,setBet2] = useState("10")
+const [mode1,setMode1] = useState("bet")
+const [mode2,setMode2] = useState("bet")
+const [autoCash1,setAutoCash1] = useState("2")
+const [autoCash2,setAutoCash2] = useState("2")
+
+
+// betting system add
+const [betPlaced1,setBetPlaced1] = useState(false)
+const [betPlaced2,setBetPlaced2] = useState(false)
+
+const [cashedOut1,setCashedOut1] = useState(false)
+const [cashedOut2,setCashedOut2] = useState(false)
+
+const [betAmount1,setBetAmount1] = useState(0)
+const [betAmount2,setBetAmount2] = useState(0)
+
+const [queuedBet1, setQueuedBet1] = useState(false);
+const [queuedBet2, setQueuedBet2] = useState(false);
+
+const [loadingBet1, setLoadingBet1] = useState(false)
+const [loadingBet2, setLoadingBet2] = useState(false)
+
+
+const {
+  balance,
+  withdrawBalance,
+  addBalance
+} = useContext(DepositContext)
+
+const [showHistory,setShowHistory] = useState(false) 
+
+const webViewRef = useRef(null);
+const [playersOnline,setPlayersOnline] = useState(2438) // random player amount dykanor jonno
+
+// setting button er jonno
+const [showSettings, setShowSettings] = useState(false);
+const [soundOn, setSoundOn] = useState(true);
+const [musicOn, setMusicOn] = useState(true);
+
+const screenW = Dimensions.get("window").width;
+const [cashData, setCashData] = useState(null);
+const progressAnim = useRef(new Animated.Value(1)).current;
+
+
+const [trail,setTrail] = useState([])
+
+const [offsetX,setOffsetX] = useState(0)
+const [offsetY,setOffsetY] = useState(0)
+
+useEffect(()=>{
+const interval = setInterval(()=>{
+setOffsetX(prev => prev + 1.2)
+setOffsetY(prev => prev - 0.8)
+},16)
+return ()=> clearInterval(interval)
+},[])
+
+
+useEffect(()=>{
+  fakePlayers()
+
+  return () => {
+    if(playerTimer.current){
+      clearInterval(playerTimer.current)
+    }
+  }
+},[])
+
+
+
+// cashout massage er jonno 
+useEffect(() => {
+
+const interval = setInterval(() => {
+
+  const name = names[Math.floor(Math.random()*names.length)];
+  const amount = amounts[Math.floor(Math.random()*amounts.length)];
+  const method = methods[Math.floor(Math.random()*methods.length)];
+
+  setCashData({
+    name,
+    amount,
+    method
+  });
+
+  progressAnim.setValue(1);
+
+  // progress bar animation (5 sec)
+  Animated.timing(progressAnim,{
+    toValue: 0,
+    duration: 5000,
+    useNativeDriver: false
+  }).start(() => {
+    setCashData(null);
+  });
+
+},10000); // every 10 sec
+
+return ()=>clearInterval(interval);
+
+},[]);
+
+
+
+
+
+
+const [uid, setUid] = useState("");
+
+  useEffect(() => {
+    const loadUID = async () => {
+      const savedUID = await AsyncStorage.getItem("uid");
+      if (savedUID) setUid(savedUID);
+    };
+
+    loadUID();
+  }, []);
+
+
+
+
+
+// crash history dykanor jonno 
+const generateRealisticHistory = () => {
+  const arr = [];
+
+  for (let i = 0; i < 50; i++) {
+    let num;
+
+    // 70% chance small crash, 30% big win
+    if (Math.random() < 0.7) {
+      num = (Math.random() * 2 + 1).toFixed(2); // 1x - 3x
+    } else {
+      num = (Math.random() * 10 + 2).toFixed(2); // 2x - 12x
+    }
+    arr.push(Number(num));
+  }
+  return arr;
+};
+const [history,setHistory] = useState(generateRealisticHistory())  
+useEffect(() => {
+  setHistory(generateRealisticHistory());
+}, []);
+
+
+
+const gameTimer = useRef(null)
+const playerTimer = useRef(null)
+
+const [waiting,setWaiting]=useState(false)
+const [waitTime,setWaitTime]=useState(7)
+
+const [result,setResult] = useState("")
+
+
+
+const fetchCrash = async () => {
+  try {
+    const res = await fetch(`${SERVER}/current`);
+    const data = await res.json();
+
+    webViewRef.current?.postMessage(JSON.stringify({
+      type: "SET_CRASH",
+      value: parseFloat(data.crashPoint)
+    }));
+
+  } catch (e) {
+    console.log("Crash fetch error", e);
+  }
+};
+  
+
+
+
+
+// fake player er number dykai
+useEffect(()=>{
+
+ const timer = setInterval(()=>{
+  const random = 1000 + Math.floor(Math.random()*1500)
+  setPlayersOnline(random)
+ },4000)
+ return ()=>clearInterval(timer)
+},[])
+
+
+
+//bet history er jonno 2 ta
+useEffect(() => {
+  AsyncStorage.setItem("MY_BETS", JSON.stringify(myBets));
+}, [myBets]);
+
+useEffect(() => {
+  const loadBets = async () => {
+    const data = await AsyncStorage.getItem("MY_BETS");
+    if (data) {
+      setMyBets(JSON.parse(data));
+    }
+  };
+  loadBets();
+}, []);
+
+
+
+
+
+//waiting massage time set
+useEffect(()=>{
+  if(waiting){
+    setWaitTime(7)
+  }
+},[waiting])
+useEffect(()=>{
+if(!waiting) return
+
+const timer=setInterval(()=>{
+setWaitTime(prev=>{
+
+    if(prev<=1){
+    clearInterval(timer)
+    setWaiting(false)
+    return 7
+   }
+return prev-1
+  })
+},1000)
+return ()=>clearInterval(timer)
+},[waiting])
+
+
+
+
+
+//sound er jonno
+const bgMusicRef = useRef(null);
+
+useEffect(() => {
+  const bgMusic = new Sound('bg.mp3', Sound.MAIN_BUNDLE, (error) => {
+    if (error) {
+      console.log("Music Load Error", error);
+      return;
+    }
+
+    bgMusic.setNumberOfLoops(-1); // 🔥 loop forever
+    bgMusic.setVolume(0.5);       // volume
+    bgMusic.play();               // play
+
+    bgMusicRef.current = bgMusic;
+  });
+
+  return () => {
+    if (bgMusicRef.current) {
+      bgMusicRef.current.stop();
+      bgMusicRef.current.release();
+    }
+  };
+
+}, []);
+
+
+useEffect(() => {
+  if (!bgMusicRef.current) return;
+
+  if (musicOn) {
+    bgMusicRef.current.setVolume(0.5);
+  } else {
+    bgMusicRef.current.setVolume(0);
+  }
+
+}, [musicOn]);
+
+
+
+
+
+const shake = useRef(new Animated.Value(0)).current
+useEffect(()=>{
+Animated.loop(
+Animated.sequence([
+Animated.timing(shake,{toValue:5,duration:200,useNativeDriver:true}),
+Animated.timing(shake,{toValue:-5,duration:200,useNativeDriver:true}),
+])
+).start()
+},[])
+
+
+
+
+
+const fakePlayers = () => {
+  playerTimer.current = setInterval(() => {
+    const id = Math.floor(Math.random() * 900000) + 100000;
+
+    const betAmount = [1000, 2500, 500, 6700, 5600][
+      Math.floor(Math.random() * 5)
+    ];
+
+    const multi = (1 + Math.random() * 4).toFixed(2);
+
+    const win = (betAmount * multi).toFixed(2);
+
+    setPlayers(prev => {
+      const newItem = {
+        id: String(id),
+        bet: betAmount,
+        multi: `${multi}x`,
+        win
+      };
+
+      return [newItem, ...prev].slice(0, 50); // 🔥 less artificial
+    });
+
+  }, 1800 ); // 🔥 random timing
+};
+
+
+
+
+useEffect(() => {
+  if(!waiting) return
+
+  if(queuedBet1){
+    handleBet1()
+    setQueuedBet1(false)
+  }
+
+  if(queuedBet2){
+    handleBet2()
+    setQueuedBet2(false)
+  }
+
+}, [waiting])
+
+
+
+
+
+// bet er system add
+const handleBet1 = async () => {
+  if(loadingBet1) return   // 🔥 block double click
+  setLoadingBet1(true)
+
+  setTimeout(()=> setLoadingBet1(false), 300)
+
+if(waiting){
+
+  if(betPlaced1 || queuedBet1) return   // 🔥 ADD THIS
+
+  const amount = parseInt(bet1)
+
+
+  const success = await withdrawBalance(amount);
+if(!success){
+  alert("Insufficient Balance");
+  return;
+}
+  setBetPlaced1(true)
+  setBetAmount1(amount)
+
+  setMyBets(prev => [
+    {
+       id: Date.now().toString() + Math.random().toString(),
+      bet: amount,
+      multi: "1.00x",
+      win: "0"
+    },
+    ...prev
+  ])
+}else{
+  // 🔥 running round → শুধু queue হবে
+  if(!queuedBet1){
+    setQueuedBet1(true)
+  }
+}
+}
+
+
+
+const handleBet2 = async () => {
+  if(loadingBet2) return   // 🔥 block double click
+  setLoadingBet2(true)
+
+  setTimeout(()=> setLoadingBet2(false), 300)
+if(waiting){
+
+  if(betPlaced2 || queuedBet2) return   // 🔥 ADD THIS
+
+  const amount = parseInt(bet2)
+
+ const success = await withdrawBalance(amount);
+if(!success){
+  alert("Insufficient Balance");
+  return;
+}
+  setBetPlaced2(true)
+  setBetAmount2(amount)
+
+  setMyBets(prev => [
+    {
+       id: Date.now().toString() + Math.random().toString(),
+      bet: amount,
+      multi: "1.00x",
+      win: "0"
+    },
+    ...prev
+  ])
+}else{
+  if(!queuedBet2){
+    setQueuedBet2(true)
+  }
+}
+}
+
+
+
+const cancelQueuedBet1 = () => {
+  setQueuedBet1(false)
+}
+
+const cancelQueuedBet2 = () => {
+  setQueuedBet2(false)
+}
+
+
+
+const cashOut1 =  async () => {
+if(!betPlaced1 || cashedOut1) return;
+
+const win = Math.floor(betAmount1 * multiplier);
+const success = await addBalance(win);
+
+if(!success){
+  alert("Cashout failed");
+  return;
+}
+setResult(`YOU WIN ৳${win}`);
+setCashedOut1(true)
+
+setMyBets(prev =>
+  prev.map(item =>
+    item.bet === betAmount1 && item.win === "0"
+      ? {
+          ...item,
+          multi: `${multiplier.toFixed(2)}x`,
+          win: (betAmount1 * multiplier).toFixed(2)
+        }
+      : item
+  )
+)
+setTimeout(()=> {
+  setBetPlaced1(false)
+  setBetAmount1(0)
+},1500)
+}
+
+
+
+const cashOut2 = async () => {
+if(!betPlaced2 || cashedOut2) return;
+
+const win = Math.floor(betAmount1 * multiplier);
+const success = await addBalance(win);
+
+if(!success){
+  alert("Cashout failed");
+  return;
+}
+setResult(`YOU WIN ৳${win}`);
+setCashedOut2(true)
+
+setMyBets(prev =>
+  prev.map(item =>
+    item.bet === betAmount2 && item.win === "0"
+      ? {
+          ...item,
+          multi: `${multiplier.toFixed(2)}x`,
+          win: (betAmount2 * multiplier).toFixed(2)
+        }
+      : item
+  )
+)
+setTimeout(()=> {
+  setBetPlaced2(false)
+  setBetAmount2(0)
+},1500)
+}
+
+
+
+const cancelBet1 = () => {
+addBalance(betAmount1)
+setBetPlaced1(false)
+setBetAmount1(0)
+}
+
+const cancelBet2 = () => {
+addBalance(betAmount2)
+setBetPlaced2(false)
+setBetAmount2(0)
+}
+
+
+return( 
+  <ScrollView> 
+<View style={{flex:1}}>
+<View style={styles.container}>
+
+
+{/* crush history */}
+<View style={styles.topBar}>
+
+<Text style={styles.playersOnline}>
+👥 {playersOnline.toLocaleString()} Players Playing
+</Text>
+
+ <TouchableOpacity 
+  style={styles.historyBtn}onPress={() => setShowSettings(true)} > 
+  <Text 
+  style={{color:"#ffffffff",fontWeight:"bold", alignSelf: 'center'}}> ⚙️ </Text> 
+  </TouchableOpacity>
+  </View>
+
+<View style={styles.historyRow}>
+
+  {/* LEFT: mini history */}
+  <View style={styles.historyList}>
+    {history.slice(0,5).map((item,index)=>{ 
+      const color = item < 2 ? "#ff3b30" : "#22c55e" 
+      return( 
+        <View key={index} style={[styles.historyMini,{borderColor:color}]}> 
+          <Text style={{color,fontWeight:"bold"}}>{item}x</Text> 
+        </View> 
+      ) 
+    })} 
+  </View>
+
+  {/* RIGHT: history button */}
+  <TouchableOpacity 
+    style={styles.historyBtn} 
+    onPress={()=>setShowHistory(true)}
+  >
+    <Text style={{color:"#fff",fontWeight:"bold"}}>⏱</Text> 
+  </TouchableOpacity>
+
+</View>
+
+
+
+
+{/* graph */}
+
+<View style={styles.graph}>
+
+<View style={{height:240, width:'100%', position: "relative"}}>
+<PixiGraph
+width={screenW - 20}
+height={240}
+webRef={webViewRef}
+
+ 
+  onMessage={(event)=>{
+  try {
+    const data = JSON.parse(event.nativeEvent.data)
+
+    console.log("DATA:", data)  // 🔥 debug
+
+    if(data.type === "CRASH"){
+  crashPoint.current = data.crashPoint
+fetch(`${SERVER}/consume`).catch(()=>{});
+let lostAmount = 0;
+
+if(betPlaced1 && !cashedOut1){
+  lostAmount += betAmount1;
+}
+if(betPlaced2 && !cashedOut2){
+  lostAmount += betAmount2;
+}
+
+if(lostAmount > 0){
+  // send lose msg to PixiGraph overlay
+  webViewRef.current?.postMessage(JSON.stringify({
+    type:"LOSE_MESSAGE",
+    text:`YOU LOST ৳${lostAmount}`
+  }))
+}
+
+ setBetPlaced1(false)
+setBetPlaced2(false)
+
+setCashedOut1(false)
+setCashedOut2(false)
+
+setBetAmount1(0)
+setBetAmount2(0)
+
+setQueuedBet1(false)
+setQueuedBet2(false)
+
+
+
+
+  // 🔥 ADD THIS → history update
+  setHistory(prev => {
+    const newItem = Number(data.crashPoint.toFixed(2))
+    const updated = [newItem, ...prev]
+    return updated.slice(0, 50)
+  })
+
+ 
+
+// ✅ ADD THIS (VERY IMPORTANT)
+  setTimeout(() => {
+    setWaiting(true)
+
+  // reset states
+  setCashedOut1(false)
+  setCashedOut2(false)
+  setBetPlaced1(false)
+  setBetPlaced2(false)
+  setMultiplier(1) // reset for next round
+},4000) 
+    }
+
+if(data.type === "MULTIPLIER"){
+  setMultiplier(data.value)
+}
+
+if(data.type === "ROUND_START"){
+  setWaiting(false)
+  setResult("")
+
+  webViewRef.current?.postMessage(JSON.stringify({
+    type:"CLEAR_LOSE"
+  }));
+
+  fetchCrash();   // 🔥 এখানেই বসবে
+}
+
+  } catch(e){
+    console.log("Parse Error", e)
+  }
+}}
+/>
+
+{result !== "" && !waiting && (
+  <View style={{
+    position:"absolute",
+    top: 105,
+    alignSelf:"center",
+    backgroundColor:"#000000aa",
+    paddingHorizontal:15,
+    paddingVertical:6,
+    borderRadius:12
+  }}>
+    <Text style={{color:"#22c55e", fontWeight:"bold", fontSize:16}}>
+      {result}
+    </Text>
+  </View>
+)}
+
+{/* 🔥 WAITING OVERLAY */}
+  {waiting && (
+    <View style={styles.waitOverlay}>
+        <Image
+          source={require('./assets/ufc.png')}
+          style={{ width: 190, height: 45, resizeMode: 'contain', borderRadius: 10 }}
+        />
+      <Text style={styles.waitTitle}>
+        OFFICIAL PARTNERS
+      </Text>
+
+      {/* 🔴 progress bar */}
+      <View style={styles.progressBarBg}>
+        <View style={[
+          styles.progressBarFill,
+          { width: `${(waitTime / 7) * 100}%` }
+        ]}/>
+      </View>
+
+      <View style={styles.partnerBox}>
+        <Text style={styles.partnerName}>
+          Grand_WIN_BET
+        </Text>
+
+        <Text style={styles.partnerSub}>
+          Official Game ✓
+        </Text>
+
+        <Text style={styles.partnerSince}>
+          Since 2019
+        </Text>
+      </View>
+
+    </View>
+  )}
+
+</View>
+
+
+
+
+
+</View>
+
+{/* betting */}
+
+<View style={{padding:10, marginTop: 5}}>
+
+<BetPanel
+bet={bet1}
+setBet={setBet1}
+mode={mode1}
+setMode={setMode1}
+autoCash={autoCash1}
+setAutoCash={setAutoCash1}
+buttonText={
+waiting
+? ((betPlaced1 || queuedBet1) ? "CANCEL" : `BET\n${bet1} BDT`)
+: queuedBet1
+  ? "WAIT FOR NEXT ROUND"
+  : (betPlaced1 && !cashedOut1
+      ? `CASHOUT\n${(betAmount1*multiplier).toFixed(2)}`
+      : "BET")
+}
+buttonColor={
+waiting
+? ((betPlaced1 || queuedBet1) ? "#ef4444" : "#22c55e")
+: queuedBet1
+  ? "#64748b"   // grey (waiting)
+  : (!cashedOut1 && betPlaced1 ? "#f59e0b" : "#22c55e")
+}
+onBetPress={()=>{
+
+if(waiting){
+
+  if(betPlaced1){
+    cancelBet1()
+  }else{
+    handleBet1()
+  }
+
+}else{
+
+  if(queuedBet1){
+    cancelQueuedBet1()   // 🔥 cancel queued bet
+  }
+  else if(betPlaced1){
+    cashOut1()
+  }
+  else{
+    handleBet1()
+  }
+}
+}}
+/>
+
+
+
+
+<BetPanel
+bet={bet2}
+setBet={setBet2}
+mode={mode2}
+setMode={setMode2}
+autoCash={autoCash2}
+setAutoCash={setAutoCash2}
+buttonText={
+waiting
+? ((betPlaced2 || queuedBet2) ? "CANCEL" : `BET\n${bet2} BDT`)
+: queuedBet2
+  ? "WAIT FOR NEXT ROUND"
+  : (betPlaced2 && !cashedOut2
+      ? `CASHOUT\n${(betAmount2*multiplier).toFixed(2)}`
+      : "BET")
+}
+buttonColor={
+waiting
+? ((betPlaced2 || queuedBet2) ? "#ef4444" : "#22c55e")
+: queuedBet2
+  ? "#64748b"   // grey (waiting)
+  : (!cashedOut2 && betPlaced2 ? "#f59e0b" : "#22c55e")
+}
+onBetPress={()=>{
+
+if(waiting){
+
+  if(betPlaced2){
+    cancelBet2()
+  }else{
+    handleBet2()
+  }
+
+}else{
+
+  if(queuedBet2){
+    cancelQueuedBet2()   // 🔥 cancel queued bet
+  }
+  else if(betPlaced2){
+    cashOut2()
+  }
+  else{
+    handleBet2()
+  }
+
+}
+}}
+/>
+
+
+
+</View>
+
+
+
+
+{/* players list */}
+
+<View style={[styles.list, { height: 640 }]}>
+
+<View style={styles.modeRow2}>
+
+<TouchableOpacity 
+style={[
+  styles.modeBtn2,
+  activeTab === "wins" && { backgroundColor:"#90fcfcff" }
+]}
+onPress={()=>setActiveTab("wins")}
+>
+<Text style={{color:"#000000ff",fontWeight:"bold"}}>
+Recent Wins
+</Text>
+</TouchableOpacity>
+
+<TouchableOpacity 
+style={[
+  styles.modeBtn2,
+  activeTab === "mybets" && { backgroundColor:"#90fcfcff" }
+]}
+onPress={()=>setActiveTab("mybets")}
+>
+<Text style={{color:"#000000ff",fontWeight:"bold"}}>
+My Bets
+</Text>
+</TouchableOpacity>
+
+</View>
+
+<FlatList
+  data={activeTab === "wins" ? players : myBets}
+  keyExtractor={i => i.id.toString()}
+  removeClippedSubviews={true}
+  showsVerticalScrollIndicator={false}
+  initialNumToRender={20}
+  maxToRenderPerBatch={20}
+  windowSize={10}
+  updateCellsBatchingPeriod={50}
+  renderItem={({item}) => <PlayerRow item={item} />}
+/>
+
+</View>
+
+{cashData && (
+<View style={styles.cashBox}>
+
+  <Image source={cashData.method.icon} style={styles.cashIcon} />
+
+  <View style={{flex:1}}>
+    <Text style={styles.cashTitle}>
+      {cashData.name}
+    </Text>
+
+    <Text style={styles.cashSub}>
+      Cash out ৳{cashData.amount}
+    </Text>
+  </View>
+
+  {/* progress bar */}
+  <Animated.View
+    style={[
+      styles.progress,
+      {
+        width: progressAnim.interpolate({
+          inputRange:[0,1],
+          outputRange:["0%","100%"]
+        })
+      }
+    ]}
+  />
+
+</View>
+)}
+</View>
+{showHistory && (
+
+<View style={styles.historyModal}>
+
+<View style={styles.historyContent}>
+
+<Text style={styles.historyTitle}>
+Crash History
+</Text>
+
+<FlatList
+data={history}
+numColumns={5}
+keyExtractor={(item,index)=>index.toString()}
+renderItem={({item})=>{
+
+const color = item < 2 ? "#ff3b30" : "#22c55e"
+
+return(
+<View style={[styles.historyBoxModal,{borderColor:color,borderWidth:1}]}>
+<Text style={{color:"#fff",fontWeight:"bold"}}>
+{item}x
+</Text>
+</View>
+)
+
+}}
+/>
+
+<TouchableOpacity
+style={styles.closeBtn}
+onPress={()=>setShowHistory(false)}
+>
+<Text style={{color:"#000000ff",fontWeight:"bold"}}>
+Close
+</Text>
+</TouchableOpacity>
+
+</View>
+
+</View>
+
+)}
+
+{showSettings && (
+  <View style={styles.overlay}>
+    
+    <View style={styles.settingsBox}>
+
+      {/* HEADER */}
+      <Text style={styles.settingsTitle}>
+        ⚙️ Settings
+      </Text>
+
+      {/* ID */}
+      <View style={styles.row2}>
+        <Text style={styles.label}>ID:</Text>
+        <Text style={styles.value}>  {uid}</Text>
+      </View>
+
+      {/* SOUND */}
+      <View style={styles.row2}>
+        <Text style={styles.label}>Sound</Text>
+
+        <TouchableOpacity
+          style={[
+            styles.toggle,
+            soundOn && styles.toggleActive
+          ]}
+          onPress={() => setSoundOn(!soundOn)}
+        >
+          <View style={[
+            styles.toggleCircle,
+            soundOn && {alignSelf:"flex-end"}
+          ]}/>
+        </TouchableOpacity>
+      </View>
+
+      {/* MUSIC */}
+      <View style={styles.row2}>
+        <Text style={styles.label}>Music</Text>
+
+        <TouchableOpacity
+          style={[
+            styles.toggle,
+            musicOn && styles.toggleActive
+          ]}
+          onPress={() => setMusicOn(!musicOn)}
+        >
+          <View style={[
+            styles.toggleCircle,
+            musicOn && {alignSelf:"flex-end"}
+          ]}/>
+        </TouchableOpacity>
+      </View>
+
+      {/* HISTORY */}
+      <TouchableOpacity style={styles.menuBtn}>
+        <Text style={styles.menuText}>My Bet History</Text>
+      </TouchableOpacity>
+
+      {/* LANGUAGE */}
+      <TouchableOpacity style={styles.menuBtn}>
+        <Text style={styles.menuText}>Language: English</Text>
+      </TouchableOpacity>
+
+      {/* CLOSE */}
+      <TouchableOpacity
+        style={styles.closeBtn2}
+        onPress={() => setShowSettings(false)}
+      >
+        <Text style={{color:"#000", fontWeight:"bold"}}>
+          Close
+        </Text>
+      </TouchableOpacity>
+
+    </View>
+  </View>
+)}
+</View>
+</ScrollView>
+
+)
+}
+
+
+const styles=StyleSheet.create({
+
+container:{
+flex:1,
+backgroundColor:"#0b1220",
+},
+
+playersOnline:{
+color:"#fff",
+fontWeight:"bold"
+},
+
+graph:{
+height: 260,
+backgroundColor:"#121a2b",
+margin:10,
+borderRadius:20,
+overflow:"hidden",
+justifyContent:"center",
+alignItems:"center",
+borderColor: '#ebe4e4ff',
+borderWidth: 1,
+zIndex: 0,
+elevation: 0
+},
+
+
+
+
+
+
+
+betBox:{
+padding:8,
+flexDirection: 'column',
+marginTop: -10,
+},
+betBox2:{
+padding:8,
+flexDirection: 'column',
+marginTop: -10,
+},
+
+betRow:{
+flexDirection:'row',
+alignItems:"center",
+height: 27,
+marginTop: wp('-8%')
+},
+
+input:{
+ flex:1,
+  minWidth: wp('20%'), 
+backgroundColor:"#1e293b",
+color:"#ffffffff",
+padding:5,
+borderRadius:8,
+textAlign:"center"
+},
+
+ctrl:{
+backgroundColor:"#3b4252",
+padding:3,
+borderRadius:8,
+marginHorizontal: wp('1%'),
+width: wp('10%'),
+height: hp('3%'),
+justifyContent:"center", 
+alignItems: "center"
+},
+
+ctrlText:{
+color:"#fff",
+fontWeight:"bold",
+fontSize:18,
+marginTop:-4
+},
+mainRow:{
+flexDirection:'row',
+alignItems:'center',
+gap: wp('1%')
+},
+
+quickRow:{
+flexDirection:'row',
+flexWrap:'wrap',
+marginTop:5,
+gap:6,
+height: 30,
+},
+
+quick:{
+backgroundColor:"#3b4252",
+padding:5,
+borderRadius:8,
+flex:1,
+  minWidth: wp('20%'),
+alignItems:"center",
+},
+
+betBtn:{
+backgroundColor:"#22c55e",
+borderRadius:10,
+justifyContent:"center",
+alignItems:"center",
+  // 🔥 CHANGE
+flex:1,
+  height: hp('11%'),
+  marginLeft: wp('2%')
+
+},
+modeRow:{
+flexDirection:"row",
+justifyContent:"center",
+marginBottom:8,
+height: 30,
+marginTop:5
+},
+
+modeBtn:{
+backgroundColor:"#1e293b",
+padding:5,
+borderRadius:8,
+
+ flex:1,
+  marginHorizontal: wp('1%'),
+alignItems:"center"
+},
+autoBox:{
+flexDirection:"row",
+alignItems:"center",
+marginBottom:6
+},
+
+autoInput:{
+backgroundColor:"#1e293b",
+color:"#fff",
+padding:3,
+borderRadius:6,
+ flex:1,
+  minWidth: wp('20%'),
+textAlign:"center",
+marginBottom:5
+},
+
+
+
+
+
+
+list:{
+height: 320, 
+padding:5,
+},
+
+listTitle:{
+color:"#fff",
+fontWeight:"bold",
+marginBottom:2,
+marginTop:-25,
+},
+topBar:{
+paddingHorizontal:5,
+flexDirection:'row',
+alignItems:'center',
+justifyContent:'space-between',
+marginBottom: 8,
+marginTop:5
+},
+
+row:{
+flexDirection:"row",
+justifyContent:"space-between",
+backgroundColor:"#1e293b",
+padding:5,
+borderRadius:5,
+marginBottom:6,
+height:32
+},
+
+id:{color:"#fff",width:90},
+bet:{color:"#fff",width:40},
+multi:{color:"#60a5fa",width:50},
+win:{color:"#fff",width:70},
+
+
+activeMode:{
+backgroundColor:"#22c55e"
+},
+
+modeText:{
+color:"#fff",
+fontWeight:"bold"
+},
+
+historyRow:{
+  flexDirection:"row",
+  alignItems:"center",
+  justifyContent:'flex-end',
+  paddingHorizontal:10,
+  marginBottom:8
+},
+
+historyList:{
+  flexDirection:"row",
+  alignItems:"center",
+  flexShrink:1,
+},
+
+historyMini:{ 
+  backgroundColor:"#1e293aff", 
+  paddingHorizontal:8,
+  paddingVertical:4,
+  borderRadius:6,
+  marginRight:5,
+  minWidth:50,
+  alignItems:"center",
+  borderWidth:1
+}, 
+
+historyBtn:{ 
+  backgroundColor:"#445166ff", 
+  width:42,
+  height:32,
+  borderRadius:8,
+  justifyContent:"center",
+  alignItems:"center",
+},
+progressBar:{
+width:"80%",
+height:6,
+backgroundColor:"#1e293b",
+borderRadius:5,
+marginTop:10,
+overflow:"hidden",
+alignSelf:"center"
+},
+waitText:{
+color:"#fff",
+fontSize:18,
+marginTop:10,
+fontWeight:"bold"
+},
+waitBox:{
+position:"absolute",
+top:170,
+alignSelf:"center",
+alignItems:"center"
+},
+
+historyModal:{ 
+  position:"absolute", 
+  width:"100%", 
+  height:2000, 
+   zIndex:9999,          // 🔥 add
+  elevation:20,         // 🔥 Android fix
+  backgroundColor:"rgba(0,0,0,0.7)", 
+  justifyContent:"center", 
+  alignItems:"center" ,
+  marginTop: -680,
+}, 
+historyContent:{ 
+  backgroundColor:"#212a3fff", 
+  padding:2, 
+  borderRadius:10, 
+   width: wp('90%')
+}, 
+historyTitle:{ 
+  color:"#fff", 
+  fontSize:18, 
+  fontWeight:"bold",
+   marginBottom:10, 
+   textAlign:"center"
+   }, 
+  historyBoxModal:{ 
+    backgroundColor:"#40526eff",
+     padding:8, 
+     borderRadius:8, 
+     margin:5, 
+     width:58, 
+     alignItems:"center" 
+    }, 
+  closeBtn:{ 
+    backgroundColor:"#09f76cff",
+     padding:10, 
+     borderRadius:15,
+      marginTop:15,
+       alignItems:"center" ,
+       width:120,
+       alignSelf: 'center',
+       marginBottom:5
+    },
+modeRow2:{
+flexDirection:"row",
+justifyContent:"center",
+marginBottom:8,
+height: 23,
+marginTop:-10,
+},
+
+modeBtn2:{
+backgroundColor:"#575f6dff",
+padding:0,
+borderRadius:8,
+marginHorizontal:5,
+width:100,
+alignItems:"center"
+},
+cashBox:{
+  position:"absolute",
+ bottom: hp('2%'),   // 🔥 CHANGE
+  left: wp('3%'),
+  flexDirection:"row",
+  alignItems:"center",
+  backgroundColor:"#ffffff",
+  padding:10,
+  borderRadius:15,
+  width: wp('50%'),
+  elevation:10,
+  shadowColor:"#000",
+},
+
+cashIcon:{
+  width:40,
+  height:40,
+  borderRadius:10,
+  marginRight:10
+},
+
+cashTitle:{
+  fontWeight:"bold",
+  fontSize:14
+},
+
+cashSub:{
+  color:"#16a34a",
+  fontSize:12
+},
+
+progress:{
+  position:"absolute",
+  bottom:0,
+  left:0,
+  height:4,
+  backgroundColor:"#22c55e",
+  borderBottomLeftRadius:10,
+  borderBottomRightRadius:10
+},
+
+
+// setting er button
+waitOverlay:{
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+
+  backgroundColor: "rgba(0,0,0,0.85)", // 🔥 strong overlay
+  justifyContent: "center",
+  alignItems: "center",
+
+  zIndex: 9999,       // 🔥 VERY IMPORTANT
+  elevation: 20       // 🔥 Android fix
+},
+
+waitTitle:{
+  color:"#fff",
+  fontSize:13,
+  fontWeight:"600",
+  marginBottom:10,
+  letterSpacing:2
+},
+
+progressBarBg:{
+  width:"55%",
+  height:5,
+  backgroundColor:"#374151",
+  borderRadius:10,
+  overflow:"hidden",
+  marginBottom:15
+},
+
+progressBarFill:{
+  height:"100%",
+  backgroundColor:"#ff3b30"
+},
+
+partnerBox:{
+  borderWidth:2,
+  borderColor:"#22c55e",
+  borderRadius:15,
+  padding:15,
+  alignItems:"center",
+  width:"70%"
+},
+
+partnerName:{
+  color:"#fff",
+  fontWeight:"bold",
+  fontSize:14
+},
+
+partnerSub:{
+  color:"#22c55e",
+  marginTop:5,
+  fontSize:12
+},
+
+partnerSince:{
+  color:"#9ca3af",
+  marginTop:3,
+  fontSize:10
+},
+
+
+overlay:{
+  position:"absolute",
+  top:0,
+  left:0,
+  right:0,
+  bottom:0,
+  backgroundColor:"rgba(0,0,0,0.7)",
+  justifyContent:"flex-end",  // 🔥 bottom sheet style
+  zIndex:99999,
+  elevation:50
+  
+},
+
+settingsBox:{
+  backgroundColor:"#1b1f2a",
+  padding:20,
+  borderTopLeftRadius:20,
+  borderTopRightRadius:20,
+  minHeight:300,
+  width:"100%"
+},
+
+settingsTitle:{
+  color:"#fff",
+  fontSize:20,
+  fontWeight:"bold",
+  marginBottom:15,
+  textAlign:"center"
+},
+
+row2:{
+  flexDirection:"row",
+  justifyContent:"space-between",
+  alignItems:"center",
+  marginVertical:10
+},
+
+label:{
+  color:"#fff",
+  fontSize:16
+},
+
+value:{
+  color:"#22c55e",
+  fontWeight:"bold"
+},
+
+menuBtn:{
+  backgroundColor:"#2a2f3f",
+  padding:12,
+  borderRadius:10,
+  marginTop:10
+},
+
+menuText:{
+  color:"#fff",
+  fontSize:15
+},
+
+closeBtn2:{
+  backgroundColor:"#09f76cff",
+     padding:10, 
+     borderRadius:15,
+      marginTop:15,
+       alignItems:"center" ,
+       width:120,
+       alignSelf: 'center',
+       marginBottom:5
+},
+
+toggle:{
+  width:50,
+  height:25,
+  backgroundColor:"#555",
+  borderRadius:20,
+  padding:3
+},
+
+toggleActive:{
+  backgroundColor:"#22c55e"
+},
+
+toggleCircle:{
+  width:19,
+  height:19,
+  backgroundColor:"#fff",
+  borderRadius:10
+},
+})
